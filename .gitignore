@@ -1,0 +1,8 @@
+.DS_Store
+.cache/
+.vscode/
+node_modules/
+/public/static
+*yarn*
+*.log*
+.history

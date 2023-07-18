@@ -1,0 +1,101 @@
+import { ConfigEnv, loadEnv, UserConfig, defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
+import viteCompression from 'vite-plugin-compression'
+
+import path from 'path'
+import packageJson from './package.json'
+import federation from '../../build/federations.js'
+
+const HOST = '0.0.0.0'
+
+export default ({ mode, root, base }) => {
+  return defineConfig({
+    base: '/', 
+    root: root || './',
+    publicDir: '../../public/',
+    build: {
+      mode,
+      target: 'modules',
+      outDir: `${path.resolve(__dirname, '../../dist')}`,
+      assetsDir: `assets/main/${packageJson.version}`,
+      sourcemap: mode !== 'production',
+      minify: mode !== 'development' ? 'esbuild' : false, // 'esbuild',
+      cssCodeSplit: false,
+      rollupOptions: {
+        input: root ? '../../index.html' : '',
+        external: ['vue', 'vue-router', 'vuex'],
+        // input: {
+        //   // main: `${path.resolve(__dirname, './src/main.ts')}`,
+        // },
+      },
+    },
+    optimizedeps: {
+      esbuildoptions: {
+        target: 'esnext',
+      },
+    },
+    server: {
+      host: HOST,
+      port: 3001, //process.env.PORT,
+      fs: {
+        strict: false,
+        allow: ['../packages'],
+      },
+    },
+    css: {
+      devSourcemap: true, // 不启用这个，vite对带css的vue文件不支持sourcemap
+      preprocessorOptions: {
+        // less: {
+        //   modifyVars: theme,
+        //   javascriptEnabled: true,
+        // },
+      },
+    },
+    resolve: {
+      alias: [
+        {
+          find: '@',
+          replacement: `${path.resolve(__dirname, 'src')}`,
+        },
+      ],
+    },
+    plugins: [
+      vue({
+        jsx: true,
+      }),
+
+      vueJsx(),
+
+      federation({
+        mode,
+        isRootService: !!root,
+        name: 'mainHost',
+        filename: 'remoteEntry.js',
+        remotes: {
+          loginRemote: {
+            devUrl: 'http://localhost:3001',
+          },
+          userRemote: {
+            devUrl: 'http://localhost:3005',
+          },
+          contractRemote: {
+            devUrl: 'http://localhost:3002',
+          },
+          flowstartRemote: {
+            devUrl: 'http://localhost:3003',
+          },
+          templateRemote: {
+            devUrl: 'http://localhost:3004',
+          },
+          signRemote: {
+            devUrl: 'http://localhost:3008',
+          },
+        },
+        shared: [],
+      }),
+
+      mode !== 'development' && viteCompression(),
+    ],
+  })
+}

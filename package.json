@@ -1,0 +1,39 @@
+{
+  "name": "vite-micro",
+  "version": "0.0.1",
+  "description": "vite 微前端框架",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/rimraf lib && rollup -c"
+  },
+  "files": [
+    "src",
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "flyRain",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.12.1",
+    "@esign/esign-plugin": "0.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-external-helpers": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@tsign/eslint-config-esign": "^1.0.8",
+    "babel-preset-latest": "^6.24.1",
+    "cross-env": "^7.0.2",
+    "install": "^0.13.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.10.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^7.0.2"
+  }
+}
