@@ -2,7 +2,24 @@
   "name": "vite-micro",
   "version": "0.0.1",
   "description": "vite 微前端框架",
+  "bin": {
+    "vite": "src/bin/micro.js"
+  },
   "main": "lib/index.js",
+  "module": "./dist/node/index.js",
+  "types": "./dist/node/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.js",
+      "require": "./index.cjs"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    },
+    "./dist/client/*": "./dist/client/*",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "./node_modules/.bin/rimraf lib && rollup -c"
   },
@@ -17,23 +34,35 @@
   "author": "flyRain",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.12.1",
-    "@esign/esign-plugin": "0.1.1"
+    "@originjs/vite-plugin-federation": "^1.1.9",
+    "cac": "^6.7.14",
+    "fs-extra": "latest",
+    "koa": "^2.13.4",
+    "koa-connect": "^2.1.0",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
+    "koa-static-cache": "^5.1.4",
+    "tslib": "^2.6.1",
+    "vite": "^3.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-external-helpers": "^7.12.1",
-    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.18.2",
     "@babel/preset-env": "^7.12.1",
+    "@babel/runtime-corejs3": "^7.18.3",
+    "@rollup/plugin-alias": "^3.1.9",
     "@rollup/plugin-babel": "^5.2.1",
-    "@tsign/eslint-config-esign": "^1.0.8",
-    "babel-preset-latest": "^6.24.1",
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-image": "^2.0.5",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "@rollup/plugin-url": "^7.0.0",
     "cross-env": "^7.0.2",
     "install": "^0.13.0",
     "rimraf": "^3.0.2",
-    "rollup": "^2.10.0",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^7.0.2"
+    "rollup": "^2.79.1",
+    "typescript": "~3.7.5"
   }
 }
