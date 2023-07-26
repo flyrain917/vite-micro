@@ -68,28 +68,14 @@ export default ({ mode, root, base }) => {
       vueJsx(),
 
       federation({
+        base: '/main',
         mode,
-        isRootService: !!root,
-        name: 'mainHost',
-        filename: 'remoteEntry.js',
         remotes: {
           loginRemote: {
-            devUrl: 'http://localhost:3001',
+            url: `/assets/login`
           },
           userRemote: {
-            devUrl: 'http://localhost:3005',
-          },
-          contractRemote: {
-            devUrl: 'http://localhost:3002',
-          },
-          flowstartRemote: {
-            devUrl: 'http://localhost:3003',
-          },
-          templateRemote: {
-            devUrl: 'http://localhost:3004',
-          },
-          signRemote: {
-            devUrl: 'http://localhost:3008',
+            url: '/assets/user'
           },
         },
         shared: [],

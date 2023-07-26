@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { setupStore } from './store/index'
 import { setupRouter } from './router/index'
 import App from './App.vue'
+import {remoteRegister} from 'vite-micro'
 
 
 let app: any = null

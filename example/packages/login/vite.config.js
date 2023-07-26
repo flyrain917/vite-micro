@@ -69,14 +69,11 @@ export default ({ mode, root, base }) => {
       vueJsx(),
 
       federation({
-        isRootService: !!base,
         base,
         mode,
-        name: 'loginRemote', //远程模块名称
-        filename: 'remoteEntry.js', //远程模块入口文件，本地模块可通过vite.config.ts的remotes引入
         exposes: {
           //远程模块对外暴露的组件列表,远程模块必填
-          share: './src/bootstrap.ts',
+          share: './src/main.ts',
         },
         shared: [], //本地模块和远程模块共享的依赖。本地模块需配置所有使用到的远端模块的依赖；远端模块需要配置对外提供的组件的依赖。
       }),

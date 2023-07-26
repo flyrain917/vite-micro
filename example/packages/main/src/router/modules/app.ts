@@ -1,3 +1,5 @@
+import { entryImportVue } from 'vite-micro'
+
 const mainRoute = [
     {
         path: '',
@@ -6,6 +8,14 @@ const mainRoute = [
     {
         path: '/home',
         component: () => import("../../views/Home.vue"),
+    },
+    {
+        path: '/login',
+        component: () => entryImportVue('login/entry'),
+    },
+    {
+        path: '/user',
+        component: () => entryImportVue('user/entry'),
     }
 ]
 
