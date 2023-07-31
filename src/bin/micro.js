@@ -35,7 +35,6 @@ if (debugIndex > 0) {
     }
   }
 }
-console.log(22)
 function start() {
   return import('../node/cli.js')
 }
@@ -53,6 +52,5 @@ if (profileIndex > 0) {
     session.post('Profiler.start', start)
   })
 } else {
-  console.log(11)
   start()
 }
