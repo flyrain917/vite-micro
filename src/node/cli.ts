@@ -1,7 +1,7 @@
 import { cac } from 'cac' // 命令行工具:  node micro.js rm div --version
-import colors from 'picocolors' // cmd color
+// import colors from 'picocolors' // cmd color
 
-const cli = cac('micro')
+const cli = cac()
 
 // global options
 interface GlobalCLIOptions {
@@ -37,7 +37,7 @@ function cleanOptions<Options extends GlobalCLIOptions>(options: Options): Omit<
   delete ret.mode
   return ret
 }
-
+console.log('====11=')
 // dev
 cli
   .command('[root]', 'start dev server') // default command
@@ -45,18 +45,20 @@ cli
   .action(async (root: string, options: GlobalCLIOptions) => {
     // output structure is preserved even after bundling so require()
     // is ok here
-    const { createServer } = await import('./server')
-    try {
-      const { app } = await createServer()
 
-      if (!app.httpServer) {
-        throw new Error('HTTP server not available')
-      }
+    const { createMicroServer } = await import('./server')
+    try {
+      const { app } = await createMicroServer()
 
       app.listen(8080, () => {
         console.log('http://localhost:8080')
       })
     } catch (e) {
+      console.log('==ecreateMicroServer====', e)
       process.exit(1)
     }
   })
+
+cli.help()
+
+cli.parse()

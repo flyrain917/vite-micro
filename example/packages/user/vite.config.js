@@ -5,13 +5,13 @@ import viteCompression from 'vite-plugin-compression'
 
 import path from 'path'
 import packageJson from './package.json'
-import federation from '../../build/federations.js'
+import federation from 'vite-micro/src/node/index'
 
 const HOST = '0.0.0.0'
 
 export default ({ mode, root, base }) => {
   return defineConfig({
-    base: base || './', 
+    base: base || './',
     root: root || './',
     build: {
       target: 'modules',
@@ -26,8 +26,7 @@ export default ({ mode, root, base }) => {
           main: `${path.resolve(__dirname, './src/main.ts')}`,
         },
         output: {
-          plugins: [
-          ],
+          plugins: [],
         },
       },
     },

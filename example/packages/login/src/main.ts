@@ -3,13 +3,12 @@ import { setupStore } from './store/index'
 import { setupRouter } from './router/index'
 import App from './App.vue'
 
-
 let app: any = null
 export async function mount(name: string, base: string) {
-  app = createApp(App);
+  app = createApp(App)
 
   // 配置store
-  setupStore(app);
+  setupStore(app)
 
   // 配置router
   setupRouter(app, base)

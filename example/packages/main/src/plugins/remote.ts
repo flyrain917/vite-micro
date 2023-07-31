@@ -1,6 +1,6 @@
-import { registerRemote } from 'vite-micro'
+// import { registerRemote } from 'vite-micro'
 
-registerRemote({
-  login: '/login',
-  user: '/user'  
-})
+// registerRemote({
+//   login: '/login',
+//   user: '/user'
+// })

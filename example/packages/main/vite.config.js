@@ -1,30 +1,31 @@
-import { ConfigEnv, loadEnv, UserConfig, defineConfig } from 'vite'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import viteCompression from 'vite-plugin-compression'
 
 import path from 'path'
 import packageJson from './package.json'
-import federation from '../../build/federations.js'
+import { federation } from 'vite-micro/dist/node/index'
 
 const HOST = '0.0.0.0'
 
 export default ({ mode, root, base }) => {
   return defineConfig({
-    base: '/', 
+    base: '/',
     root: root || './',
     publicDir: '../../public/',
     build: {
       mode,
-      target: 'modules',
+      // target: 'modules',
+      target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
       outDir: `${path.resolve(__dirname, '../../dist')}`,
       assetsDir: `assets/main/${packageJson.version}`,
       sourcemap: mode !== 'production',
-      minify: mode !== 'development' ? 'esbuild' : false, // 'esbuild',
+      minify: false, //mode !== 'development' ? 'esbuild' : false, // 'esbuild',
       cssCodeSplit: false,
       rollupOptions: {
         input: root ? '../../index.html' : '',
-        external: ['vue', 'vue-router', 'vuex'],
+        // external: ['vue', 'vue-router', 'vuex'],
         // input: {
         //   // main: `${path.resolve(__dirname, './src/main.ts')}`,
         // },
@@ -72,16 +73,16 @@ export default ({ mode, root, base }) => {
         mode,
         remotes: {
           loginRemote: {
-            url: `/assets/login`
+            url: `/assets/login`,
           },
           userRemote: {
-            url: '/assets/user'
+            url: '/assets/user',
           },
         },
-        shared: [],
+        shared: ['vue'],
       }),
 
-      mode !== 'development' && viteCompression(),
+      // mode !== 'development' && viteCompression(),
     ],
   })
 }

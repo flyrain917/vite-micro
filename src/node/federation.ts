@@ -1,17 +1,17 @@
 import federation from '@originjs/vite-plugin-federation'
 import path from 'path'
+import fs from 'fs-extra'
+import os from 'os'
 
-const fs = require('fs-extra')
-
-function normalizePath(id) {
+function normalizePath(id: any) {
   return path.posix.normalize(id.replace(/\\/g, '/'))
 }
 
 // 获取本机电脑IP
 function getIPAdress() {
-  const interfaces = require('os').networkInterfaces()
+  const interfaces = os.networkInterfaces()
   for (const devName in interfaces) {
-    const iface = interfaces[devName]
+    const iface: any = interfaces[devName]
     for (let i = 0; i < iface.length; i++) {
       const alias = iface[i]
       if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
@@ -25,7 +25,7 @@ function getIPAdress() {
 
 const host = `http://${getIPAdress()}:8080` //'http://localhost:8080'
 
-function getRemoteEntryFile(options) {
+function getRemoteEntryFile(options: any) {
   if (!options.exposes) return ''
 
   const base = options.base.split('/')[1]
@@ -60,7 +60,7 @@ function getRemoteEntryFile(options) {
       }`
 }
 
-function generateCommonRemoteEntryFile(version) {
+function generateCommonRemoteEntryFile(version: any) {
   return `
     export * from './${version}/remoteEntry.js'
   `
@@ -71,7 +71,7 @@ const federationDefaultOption = {
   filename: 'remoteEntry.js', //远程模块入口文件，本地模块可通过vite.config.ts的remotes引入
 }
 
-export default function (options) {
+export function federation1(options: any): any {
   let viteConfig: any = {}
 
   options = Object.assign(federationDefaultOption, options)
@@ -91,6 +91,7 @@ export default function (options) {
     if (options.exposes) {
       let exposes = {}
       Object.keys(options.exposes).forEach((exposesName) => {
+        //@ts-ignore
         exposes['./' + exposesName] = options.exposes[exposesName]
       })
       options.exposes = exposes
@@ -98,12 +99,12 @@ export default function (options) {
 
     const federationPlugin = federation(options)
     const federationConfigFunc = federationPlugin.config
-    federationPlugin.config = function config(config, env) {
+    federationPlugin.config = function config(config: any, env: any) {
       viteConfig = config
       federationConfigFunc.call(this, config, env)
     }
 
-    federationPlugin.closeBundle = function (value) {
+    federationPlugin.closeBundle = function (value: any) {
       if (options.exposes) {
         const dirArrs = viteConfig.build.assetsDir.split('/')
         const version = dirArrs[dirArrs.length - 1]
@@ -125,8 +126,8 @@ export default function (options) {
     let regstr = Object.keys(options.remotes).join('|')
     // TODO 匹配规则优化，兼容单引号，双引号
     const reg = new RegExp(`(${regstr})/[a-zA-Z]+'`, 'g')
-    transformFunc = (code, id) => {
-      return code.replace(reg, (remoteName) => {
+    transformFunc = (code: any, id: any) => {
+      return code.replace(reg, (remoteName: any) => {
         const arr = remoteName.split('/')
         let base = arr[0].split('Remote')[0]
         const remoteUrl = options.isRootService
@@ -142,12 +143,12 @@ export default function (options) {
     name: options.name + 'dev-federation',
     enforce: 'pre',
     transform: transformFunc,
-    resolveId(id) {
+    resolveId(id: any) {
       if (id === virtualModuleId) {
         return resolvedVirtualModuleId
       }
     },
-    load(id) {
+    load(id: any) {
       if (id === resolvedVirtualModuleId) return getRemoteEntryFile(options)
     },
   }

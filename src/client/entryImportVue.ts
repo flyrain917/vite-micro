@@ -1,4 +1,4 @@
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 import { remoteImport, splitName } from './import'
 
 interface RemoteEntry {
@@ -14,15 +14,15 @@ export function getComp(name: string, base: string, mountFunc: Function, unMount
     beforeDestroy() {
       unMountFunc && unMountFunc()
     },
-    render(h) {
+    render() {
       return h('div', { style: 'height: 100%' }, [h('div', { id: name })])
     },
   })
 }
 
-export async function entryImportVue(name) {
-  const [namespace, remoteScript] = splitName(name)
+export async function entryImportVue(name: string) {
+  const [remoteName, remoteScript] = splitName(name)
   const remote: RemoteEntry = await remoteImport(name)
 
-  return getComp(namespace, remoteScript, remote.mount, remote.unMount)
+  return getComp(remoteName, remoteScript, remote.mount, remote.unMount)
 }

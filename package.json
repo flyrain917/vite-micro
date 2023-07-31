@@ -1,27 +1,21 @@
 {
   "name": "vite-micro",
   "version": "0.0.1",
-  "description": "vite 微前端框架",
+  "description": "基于vite 微前端框架",
+  "type": "module",
   "bin": {
-    "vite": "src/bin/micro.js"
+    "micro": "src/bin/micro.js"
   },
-  "main": "lib/index.js",
-  "module": "./dist/node/index.js",
+  "main": "dist/node/index.cjs",
+  "module": "dist/node/index.mjs",
   "types": "./dist/node/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/node/index.d.ts",
-      "import": "./dist/node/index.js",
-      "require": "./index.cjs"
-    },
-    "./client": {
-      "types": "./client.d.ts"
-    },
-    "./dist/client/*": "./dist/client/*",
-    "./package.json": "./package.json"
+    "./dist/node/index": "./dist/node/index.cjs",
+    "./dist/client/index": "./dist/client/index.js"
   },
   "scripts": {
-    "build": "./node_modules/.bin/rimraf lib && rollup -c"
+    "build": "./node_modules/.bin/rimraf dist && unbuild && rollup --config rollup.config.js",
+    "unbuild": "unbuild"
   },
   "files": [
     "src",
@@ -63,6 +57,8 @@
     "install": "^0.13.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.1",
-    "typescript": "~3.7.5"
+    "rollup-plugin-copy": "^3.4.0",
+    "typescript": "^5.1.6",
+    "unbuild": "^1.2.1"
   }
 }

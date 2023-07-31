@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vite --mode development",
+    "start": "",
     "build": "vite build"
   },
   "dependencies": {
