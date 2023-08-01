@@ -6,5 +6,5 @@ node_modules/
 *yarn*
 *.log*
 .history
-dist
-example/dist
+dist/
+example/dist/

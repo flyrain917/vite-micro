@@ -5,7 +5,7 @@ import viteCompression from 'vite-plugin-compression'
 
 import path from 'path'
 import packageJson from './package.json'
-import federation from 'vite-micro/src/node/index'
+import { federation } from 'vite-micro/dist/node/index'
 
 const HOST = '0.0.0.0'
 
@@ -14,11 +14,11 @@ export default ({ mode, root, base }) => {
     base: base || './',
     root: root || './',
     build: {
-      target: 'modules',
+      target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
       outDir: `${path.resolve(__dirname, '../../dist')}`,
       assetsDir: `assets/user/${packageJson.version}`,
       sourcemap: mode !== 'production',
-      minify: mode !== 'development' ? 'esbuild' : false, // 'esbuild',
+      minify: false, // mode !== 'development' ? 'esbuild' : false, // 'esbuild',
       cssCodeSplit: false,
       rollupOptions: {
         // input: [['test.html', `${path.resolve(__dirname, './index.html')}`]],
@@ -72,12 +72,12 @@ export default ({ mode, root, base }) => {
         mode,
         exposes: {
           //远程模块对外暴露的组件列表,远程模块必填
-          share: './src/bootstrap.ts',
+          entry: './src/bootstrap.ts',
         },
-        shared: [], //本地模块和远程模块共享的依赖。本地模块需配置所有使用到的远端模块的依赖；远端模块需要配置对外提供的组件的依赖。
+        shared: ['vue'], //本地模块和远程模块共享的依赖。本地模块需配置所有使用到的远端模块的依赖；远端模块需要配置对外提供的组件的依赖。
       }),
 
-      mode !== 'development' && viteCompression(),
+      // mode !== 'development' && viteCompression(),
     ],
   })
 }

@@ -1,7 +1,9 @@
-import { createApp } from 'vue'
+import { createApp, defineEmits } from 'vue'
 import { setupStore } from './store/index'
 import { setupRouter } from './router/index'
 import App from './App.vue'
+
+console.log('====defineEmits====', defineEmits)
 
 let app: any = null
 export async function mount(name: string, base: string) {

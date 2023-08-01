@@ -1,11 +1,12 @@
-import VueRouter from 'vue-router'
+import * as VueRouter from 'vue-router'
 import userRoute from './modules/user'
-import type { App } from 'vue';
+import type { App } from 'vue'
 
 const createRouter = (base: string) =>
-  new VueRouter({
+  VueRouter.createRouter({
     mode: 'history',
-    base: base || '/login',
+    history: VueRouter.createWebHistory(),
+    base: base || '/user',
     routes: userRoute,
   })
 
@@ -13,7 +14,7 @@ export default createRouter
 
 export async function setupRouter(app: App<Element>, base: string) {
   const router = createRouter(base)
-  app.use(router);
+  app.use(router)
   await router.isReady()
   return router
 }

@@ -10,7 +10,7 @@
   "scripts": {
     "serve": "node --loader ts-node/esm ./node_modules/vite-micro/src/bin/micro.js",
     "start": "vite-micro serve",
-    "build": "lerna run build"
+    "build": "pnpm --parallel --filter='./packages/*' build"
   },
   "dependencies": {
     "@vueuse/core": "9.3.0",
