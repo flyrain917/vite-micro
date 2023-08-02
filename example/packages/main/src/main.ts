@@ -5,6 +5,8 @@ import App from './App.vue'
 
 console.log('====defineEmits111====', defineEmits)
 
+createApp.test = true
+
 let app: any = null
 export async function mount(name: string, base: string) {
   app = createApp(App)

@@ -9,10 +9,10 @@ import { federation } from 'vite-micro/dist/node/index'
 
 const HOST = '0.0.0.0'
 
-export default ({ mode, root, base }) => {
+export default ({ mode }) => {
   return defineConfig({
-    base: base || './',
-    root: root || './',
+    base: './',
+    root: './',
     build: {
       // target: 'modules',
       target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
@@ -70,7 +70,7 @@ export default ({ mode, root, base }) => {
       vueJsx(),
 
       federation({
-        base,
+        name: 'login',
         mode,
         exposes: {
           //远程模块对外暴露的组件列表,远程模块必填

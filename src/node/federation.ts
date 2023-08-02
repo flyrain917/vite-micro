@@ -25,18 +25,14 @@ function getIPAdress() {
 
 const host = `http://${getIPAdress()}:8080` //'http://localhost:8080'
 
-function getRemoteEntryFile(options: any) {
+function getRemoteEntryFile(options: any, viteConfig: any) {
   if (!options.exposes) return ''
-
-  const base = options.base.split('/')[1]
 
   let moduleMap = ''
 
   Object.keys(options.exposes).forEach((item) => {
-    const rootPath = options.isRootService ? `./packages/${base}` : ''
-    const exposeFilepath = normalizePath(path.resolve(rootPath, options.exposes[item]))
-    // console.log('----', exposeFilepath, path.resolve(`./packages/${base}`, options.exposes[item]))
-    moduleMap += `\n"${item}":()=> import('${exposeFilepath}').then(module => module),`
+    const exposeFilepath = normalizePath(path.resolve(viteConfig.root, options.exposes[item]))
+    moduleMap += `\n"${item}":()=> import('${exposeFilepath}').then(module => () => module),`
   })
 
   return `
@@ -66,6 +62,16 @@ function generateCommonRemoteEntryFile(version: any) {
   `
 }
 
+const virtualModuleId = '__remoteEntryHelper__'
+const resolvedVirtualModuleId = '\0' + virtualModuleId
+
+function getDevRemoteFileUrl(options: any, remoteName: string, base: string) {
+  const devUrl = options.remotes[remoteName].devUrl
+  const remoteUrl = devUrl ? `${devUrl}/@id/__remoteEntryHelper__` : `${host}/${base}/@id/__remoteEntryHelper__`
+
+  return remoteUrl
+}
+
 const federationDefaultOption = {
   isRootService: true, // 判断启动服务器的模式，是否为按需启动的模式
   filename: 'remoteEntry.js', //远程模块入口文件，本地模块可通过vite.config.ts的remotes引入
@@ -80,30 +86,34 @@ export function federation1(options: any): any {
     Object.keys(options.remotes).forEach((remoteName) => {
       let base = remoteName.split('Remote')[0]
 
-      options.remotes[remoteName].url = options.remotes[remoteName].url || `/assets/${base}`
-      options.remotes[remoteName].external = options.remotes[remoteName].url + `/remoteEntrys.js?version=v${Date.now()}`
+      if (options.mode === 'development') {
+        options.remotes[remoteName].external = getDevRemoteFileUrl(options, remoteName, base)
+      } else {
+        options.remotes[remoteName].url = options.remotes[remoteName].url || `/assets/${base}`
+        options.remotes[remoteName].external = options.remotes[remoteName].url + `/remoteEntrys.js?version=v${Date.now()}`
+      }
       options.remotes[remoteName].from = 'vite'
       options.remotes[remoteName].format = 'esm'
     })
   }
 
+  if (options.exposes) {
+    let exposes = {}
+    Object.keys(options.exposes).forEach((exposesName) => {
+      //@ts-ignore
+      exposes['./' + exposesName] = options.exposes[exposesName]
+    })
+    options.exposes = exposes
+  }
+
+  const federationPlugin = federation(options)
+  const federationConfigFunc = federationPlugin.config
+  federationPlugin.config = function config(config: any, env: any) {
+    viteConfig = config
+    federationConfigFunc.call(this, config, env)
+  }
+
   if (options.mode !== 'development') {
-    if (options.exposes) {
-      let exposes = {}
-      Object.keys(options.exposes).forEach((exposesName) => {
-        //@ts-ignore
-        exposes['./' + exposesName] = options.exposes[exposesName]
-      })
-      options.exposes = exposes
-    }
-
-    const federationPlugin = federation(options)
-    const federationConfigFunc = federationPlugin.config
-    federationPlugin.config = function config(config: any, env: any) {
-      viteConfig = config
-      federationConfigFunc.call(this, config, env)
-    }
-
     federationPlugin.closeBundle = function (value: any) {
       if (options.exposes) {
         const dirArrs = viteConfig.build.assetsDir.split('/')
@@ -114,42 +124,59 @@ export function federation1(options: any): any {
         })
       }
     }
-
-    return federationPlugin
   }
 
-  const virtualModuleId = '__remoteEntryHelper__'
-  const resolvedVirtualModuleId = '\0' + virtualModuleId
+  if (options.mode === 'development') {
+    const resolveIdFunc = federationPlugin.resolveId
+    federationPlugin.resolveId = (...args: any) => {
+      if (args[0] === virtualModuleId) {
+        return resolvedVirtualModuleId
+      }
+      return resolveIdFunc(...args)
+    }
 
-  let transformFunc: any = undefined
-  if (options.remotes) {
-    let regstr = Object.keys(options.remotes).join('|')
-    // TODO 匹配规则优化，兼容单引号，双引号
-    const reg = new RegExp(`(${regstr})/[a-zA-Z]+'`, 'g')
-    transformFunc = (code: any, id: any) => {
-      return code.replace(reg, (remoteName: any) => {
-        const arr = remoteName.split('/')
-        let base = arr[0].split('Remote')[0]
-        const remoteUrl = options.isRootService
-          ? `${host}/${base}/@id/__remoteEntryHelper__`
-          : `${options.remotes[arr[0]].devUrl}/@id/__remoteEntryHelper__`
+    const loadFunc = federationPlugin.load
+    federationPlugin.load = (...args: any) => {
+      if (args[0] === resolvedVirtualModuleId) return getRemoteEntryFile(options, viteConfig)
 
-        return `${remoteUrl}').then(res => res.get('${arr[1]})`
-      })
+      return loadFunc(args[0])
     }
   }
 
-  return {
-    name: options.name + 'dev-federation',
-    enforce: 'pre',
-    transform: transformFunc,
-    resolveId(id: any) {
-      if (id === virtualModuleId) {
-        return resolvedVirtualModuleId
-      }
-    },
-    load(id: any) {
-      if (id === resolvedVirtualModuleId) return getRemoteEntryFile(options)
-    },
-  }
+  return federationPlugin
+
+  // const virtualModuleId = '__remoteEntryHelper__'
+  // const resolvedVirtualModuleId = '\0' + virtualModuleId
+
+  // let transformFunc: any = undefined
+  // if (options.remotes) {
+  //   let regstr = Object.keys(options.remotes).join('|')
+  //   // TODO 匹配规则优化，兼容单引号，双引号
+  //   const reg = new RegExp(`(${regstr})/[a-zA-Z]+'`, 'g')
+  //   transformFunc = (code: any, id: any) => {
+  //     return code.replace(reg, (remoteName: any) => {
+  //       const arr = remoteName.split('/')
+  //       let base = arr[0].split('Remote')[0]
+  //       const remoteUrl = options.isRootService
+  //         ? `${host}/${base}/@id/__remoteEntryHelper__`
+  //         : `${options.remotes[arr[0]].devUrl}/@id/__remoteEntryHelper__`
+
+  //       return `${remoteUrl}').then(res => res.get('${arr[1]})`
+  //     })
+  //   }
+  // }
+
+  // return {
+  //   name: options.name + 'dev-federation',
+  //   enforce: 'pre',
+  //   transform: transformFunc,
+  //   resolveId(id: any) {
+  //     if (id === virtualModuleId) {
+  //       return resolvedVirtualModuleId
+  //     }
+  //   },
+  //   load(id: any) {
+  //     if (id === resolvedVirtualModuleId) return getRemoteEntryFile(options)
+  //   },
+  // }
 }
