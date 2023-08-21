@@ -1,1 +1,1 @@
-export { federation1 as federation } from './federation'
+export { federationMicro as federation } from './federation'

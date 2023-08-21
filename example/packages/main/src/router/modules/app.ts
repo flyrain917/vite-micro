@@ -1,4 +1,4 @@
-import { entryImportVue } from 'vite-micro/dist/client/index'
+import { entryImportVue } from 'vite-micro/client'
 
 const mainRoute = [
   {

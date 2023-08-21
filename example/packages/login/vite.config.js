@@ -5,7 +5,7 @@ import viteCompression from 'vite-plugin-compression'
 
 import path from 'path'
 import packageJson from './package.json'
-import { federation } from 'vite-micro/dist/node/index'
+import { federation } from 'vite-micro/node'
 
 const HOST = '0.0.0.0'
 
@@ -70,7 +70,6 @@ export default ({ mode }) => {
       vueJsx(),
 
       federation({
-        name: 'login',
         mode,
         exposes: {
           //远程模块对外暴露的组件列表,远程模块必填

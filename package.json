@@ -11,10 +11,16 @@
   "types": "./dist/node/index.d.ts",
   "exports": {
     "./dist/node/index": "./dist/node/index.cjs",
-    "./dist/client/index": "./dist/client/index.js"
+    "./dist/client/index": "./dist/client/index.js",
+    "./client": "./dist/client/index.js",
+    "./node": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/node/index.mjs",
+      "require": "./dist/node/index.cjs"
+    }
   },
   "scripts": {
-    "build": "./node_modules/.bin/rimraf dist && unbuild && rollup --config rollup.config.js",
+    "build": "./node_modules/.bin/rimraf dist && vite build && rollup --config rollup.config.js",
     "unbuild": "unbuild"
   },
   "files": [
@@ -29,6 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "@originjs/vite-plugin-federation": "^1.1.9",
+    "estree-walker": "^3.0.3",
     "cac": "^6.7.14",
     "fs-extra": "latest",
     "koa": "^2.13.4",
@@ -36,6 +43,7 @@
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "koa-static-cache": "^5.1.4",
+    "magic-string": "^0.30.2",
     "tslib": "^2.6.1",
     "vite": "^3.0.9"
   },

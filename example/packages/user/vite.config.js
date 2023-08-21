@@ -5,7 +5,7 @@ import viteCompression from 'vite-plugin-compression'
 
 import path from 'path'
 import packageJson from './package.json'
-import { federation } from 'vite-micro/dist/node/index'
+import { federation } from 'vite-micro/node'
 
 const HOST = '0.0.0.0'
 
@@ -14,6 +14,7 @@ export default ({ mode, root, base }) => {
     base: base || './',
     root: root || './',
     build: {
+      // target: 'modules',
       target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
       outDir: `${path.resolve(__dirname, '../../dist')}`,
       assetsDir: `assets/user/${packageJson.version}`,
@@ -23,7 +24,7 @@ export default ({ mode, root, base }) => {
       rollupOptions: {
         // input: [['test.html', `${path.resolve(__dirname, './index.html')}`]],
         input: {
-          main: `${path.resolve(__dirname, './src/main.ts')}`,
+          // main: `${path.resolve(__dirname, './src/main.ts')}`,
         },
         output: {
           plugins: [],
@@ -68,7 +69,6 @@ export default ({ mode, root, base }) => {
       vueJsx(),
 
       federation({
-        base,
         mode,
         exposes: {
           //远程模块对外暴露的组件列表,远程模块必填

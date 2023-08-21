@@ -1,37 +1,37 @@
 import federation from '@originjs/vite-plugin-federation'
+import type { ConfigEnv, Plugin, UserConfig, ViteDevServer, ResolvedConfig } from 'vite'
 import path from 'path'
 import fs from 'fs-extra'
-import os from 'os'
+import { federationFnImportFunc } from './__federation_fn_import'
+import { transform, parseSharedToShareMap } from './transformShareImport'
+import type { federationOptions, RemotesOption } from '../../types'
+import host from './hostAddress'
+
+const virtualModuleId = '__remoteEntryHelper__'
+const resolvedVirtualModuleId = '\0' + virtualModuleId
+
+const shareVirsualModuleId = 'virtual:__federation_fn_import'
+const resolveShareVirsualModuleId = '\0' + shareVirsualModuleId
+
+const federationDefaultOption = {
+  isRootService: true, // 判断启动服务器的模式，是否为按需启动的模式
+  filename: 'remoteEntry.js', //远程模块入口文件，本地模块可通过vite.config.ts的remotes引入
+  shared: [],
+}
 
 function normalizePath(id: any) {
   return path.posix.normalize(id.replace(/\\/g, '/'))
 }
 
-// 获取本机电脑IP
-function getIPAdress() {
-  const interfaces = os.networkInterfaces()
-  for (const devName in interfaces) {
-    const iface: any = interfaces[devName]
-    for (let i = 0; i < iface.length; i++) {
-      const alias = iface[i]
-      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-        // console.log(alias.address);
-
-        return alias.address
-      }
-    }
-  }
-}
-
-const host = `http://${getIPAdress()}:8080` //'http://localhost:8080'
-
-function getRemoteEntryFile(options: any, viteConfig: any) {
+function getRemoteEntryFile(options: federationOptions, viteConfig: UserConfig) {
   if (!options.exposes) return ''
+  if (!viteConfig.root) return ''
 
   let moduleMap = ''
+  const exposes = options.exposes || {}
 
   Object.keys(options.exposes).forEach((item) => {
-    const exposeFilepath = normalizePath(path.resolve(viteConfig.root, options.exposes[item]))
+    const exposeFilepath = normalizePath(path.resolve(viteConfig.root || '', exposes[item]))
     moduleMap += `\n"${item}":()=> import('${exposeFilepath}').then(module => () => module),`
   })
 
@@ -56,66 +56,84 @@ function getRemoteEntryFile(options: any, viteConfig: any) {
       }`
 }
 
-function generateCommonRemoteEntryFile(version: any) {
+function generateCommonRemoteEntryFile(version: string) {
   return `
     export * from './${version}/remoteEntry.js'
   `
 }
 
-const virtualModuleId = '__remoteEntryHelper__'
-const resolvedVirtualModuleId = '\0' + virtualModuleId
+function getDevRemoteFileUrl(options: federationOptions | { remotes: any }, remoteName: string, base: string) {
+  // 这里外部其他项目组件引入配置devUrl
+  const { devUrl, url } = options.remotes[remoteName]
 
-function getDevRemoteFileUrl(options: any, remoteName: string, base: string) {
-  const devUrl = options.remotes[remoteName].devUrl
-  const remoteUrl = devUrl ? `${devUrl}/@id/__remoteEntryHelper__` : `${host}/${base}/@id/__remoteEntryHelper__`
+  if (devUrl) return `${devUrl}/@id/__remoteEntryHelper__`
 
-  return remoteUrl
+  if (url.startWith('http')) return `${url}/@id/__remoteEntryHelper__`
+
+  return `${host}/${base}/@id/__remoteEntryHelper__`
 }
 
-const federationDefaultOption = {
-  isRootService: true, // 判断启动服务器的模式，是否为按需启动的模式
-  filename: 'remoteEntry.js', //远程模块入口文件，本地模块可通过vite.config.ts的remotes引入
+function parseRemotes(options: federationOptions) {
+  const remotes = options.remotes || {}
+  Object.keys(remotes).forEach((remoteName) => {
+    let base = remoteName.split('Remote')[0]
+
+    if (options.mode === 'development') {
+      remotes[remoteName].external = getDevRemoteFileUrl(options, remoteName, base)
+    } else {
+      remotes[remoteName].url = remotes[remoteName].url || `/assets/${base}`
+      remotes[remoteName].external = remotes[remoteName].url + `/remoteEntrys.js?version=v${Date.now()}`
+    }
+    remotes[remoteName].from = 'vite'
+    remotes[remoteName].format = 'esm'
+  })
+
+  return remotes
 }
 
-export function federation1(options: any): any {
-  let viteConfig: any = {}
+function parseExposes(options: federationOptions) {
+  options.exposes = options.exposes || {}
+  let exposes = {}
+  Object.keys(options.exposes).forEach((exposesName) => {
+    //@ts-ignore
+    exposes['./' + exposesName] = options.exposes[exposesName]
+  })
+  return exposes
+}
+
+export function federationMicro(options: federationOptions): Plugin {
+  let viteConfig: UserConfig = {}
 
   options = Object.assign(federationDefaultOption, options)
 
   if (options.remotes) {
-    Object.keys(options.remotes).forEach((remoteName) => {
-      let base = remoteName.split('Remote')[0]
-
-      if (options.mode === 'development') {
-        options.remotes[remoteName].external = getDevRemoteFileUrl(options, remoteName, base)
-      } else {
-        options.remotes[remoteName].url = options.remotes[remoteName].url || `/assets/${base}`
-        options.remotes[remoteName].external = options.remotes[remoteName].url + `/remoteEntrys.js?version=v${Date.now()}`
-      }
-      options.remotes[remoteName].from = 'vite'
-      options.remotes[remoteName].format = 'esm'
-    })
+    options.remotes = parseRemotes(options)
   }
 
   if (options.exposes) {
-    let exposes = {}
-    Object.keys(options.exposes).forEach((exposesName) => {
-      //@ts-ignore
-      exposes['./' + exposesName] = options.exposes[exposesName]
-    })
-    options.exposes = exposes
+    options.exposes = parseExposes(options)
   }
 
   const federationPlugin = federation(options)
+
+  /**
+   * 重构config
+   */
   const federationConfigFunc = federationPlugin.config
-  federationPlugin.config = function config(config: any, env: any) {
+  federationPlugin.config = function config(config: UserConfig, env: ConfigEnv) {
     viteConfig = config
     federationConfigFunc.call(this, config, env)
   }
 
+  /**
+   * 如果是生产环境，则打包结束后，生成一个具有版本管理功能的入口文件
+   */
   if (options.mode !== 'development') {
     federationPlugin.closeBundle = function (value: any) {
       if (options.exposes) {
+        if (!viteConfig?.build?.assetsDir) throw new Error('需要配置build/assetsDir')
+        if (!viteConfig?.build?.outDir) throw new Error('需要配置build/outDir')
+
         const dirArrs = viteConfig.build.assetsDir.split('/')
         const version = dirArrs[dirArrs.length - 1]
         const commonRemotePath = path.resolve(viteConfig.build.outDir + '/' + viteConfig.build.assetsDir, '../remoteEntrys.js')
@@ -127,56 +145,48 @@ export function federation1(options: any): any {
   }
 
   if (options.mode === 'development') {
+    /**
+     * 重写插件的resolveId方法
+     */
     const resolveIdFunc = federationPlugin.resolveId
-    federationPlugin.resolveId = (...args: any) => {
+    federationPlugin.resolveId = (...args: string[]) => {
       if (args[0] === virtualModuleId) {
         return resolvedVirtualModuleId
       }
+
+      if (args[0] === shareVirsualModuleId) {
+        return resolveShareVirsualModuleId
+      }
+
       return resolveIdFunc(...args)
     }
 
+    const sharedMap = parseSharedToShareMap(options.shared || [])
+    const federationFnImport = federationFnImportFunc(sharedMap)
+
     const loadFunc = federationPlugin.load
-    federationPlugin.load = (...args: any) => {
+    federationPlugin.load = (...args: string[]) => {
       if (args[0] === resolvedVirtualModuleId) return getRemoteEntryFile(options, viteConfig)
 
+      if (args[0] === resolveShareVirsualModuleId) return federationFnImport
+
       return loadFunc(args[0])
+    }
+
+    const transformFunc = federationPlugin.transform
+    federationPlugin.transform = function (code: string, id: string) {
+      const result = transform(this, code, id, options)
+
+      if (result) {
+        if (transformFunc) return transformFunc.call(this, result.code, id)
+        return result
+      }
+
+      if (transformFunc) return transformFunc.call(this, code, id)
+
+      return code
     }
   }
 
   return federationPlugin
-
-  // const virtualModuleId = '__remoteEntryHelper__'
-  // const resolvedVirtualModuleId = '\0' + virtualModuleId
-
-  // let transformFunc: any = undefined
-  // if (options.remotes) {
-  //   let regstr = Object.keys(options.remotes).join('|')
-  //   // TODO 匹配规则优化，兼容单引号，双引号
-  //   const reg = new RegExp(`(${regstr})/[a-zA-Z]+'`, 'g')
-  //   transformFunc = (code: any, id: any) => {
-  //     return code.replace(reg, (remoteName: any) => {
-  //       const arr = remoteName.split('/')
-  //       let base = arr[0].split('Remote')[0]
-  //       const remoteUrl = options.isRootService
-  //         ? `${host}/${base}/@id/__remoteEntryHelper__`
-  //         : `${options.remotes[arr[0]].devUrl}/@id/__remoteEntryHelper__`
-
-  //       return `${remoteUrl}').then(res => res.get('${arr[1]})`
-  //     })
-  //   }
-  // }
-
-  // return {
-  //   name: options.name + 'dev-federation',
-  //   enforce: 'pre',
-  //   transform: transformFunc,
-  //   resolveId(id: any) {
-  //     if (id === virtualModuleId) {
-  //       return resolvedVirtualModuleId
-  //     }
-  //   },
-  //   load(id: any) {
-  //     if (id === resolvedVirtualModuleId) return getRemoteEntryFile(options)
-  //   },
-  // }
 }

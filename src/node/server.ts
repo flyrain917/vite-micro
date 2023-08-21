@@ -23,11 +23,11 @@ const pdg = JSON.parse(pkgContent)
 
 const workspace = pdg.workspaces
 
-const modules = pdg.workspaces.map((space: any) => space.split('/')[1])
+const modules = pdg.workspaces.map((space: string) => space.split('/')[1])
 const mainModules = modules[0]
 
 // 判断url是否去拉取index.html
-function isRootIndexHtml(url: any) {
+function isRootIndexHtml(url: string) {
   let pathname = url
   if (url.includes('http')) {
     const urlObj = new URL(url)
@@ -55,7 +55,7 @@ async function getViteConfig(viteConfigPath: string, module: string, base: strin
   return viteConfig
 }
 
-function getViteConnect(module: any): Function {
+function getViteConnect(module: string): Function {
   const base = module === mainModules ? undefined : `/${module}/`
   const viteConfigPath = path.resolve(configRoot, `./packages/${module}/vite.config.js`)
 
@@ -121,7 +121,7 @@ function isPublicAssets(url: string) {
 export async function createMicroServer() {
   const [mainConnect, viteMain] = await getViteConnect(mainModules)()
 
-  modules.forEach((module: any) => {
+  modules.forEach((module: string) => {
     if (module === mainModules) return
     app.use(getViteConnect(module))
   })

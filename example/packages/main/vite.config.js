@@ -5,7 +5,7 @@ import viteCompression from 'vite-plugin-compression'
 
 import path from 'path'
 import packageJson from './package.json'
-import { federation } from 'vite-micro/dist/node/index'
+import { federation } from 'vite-micro/node'
 
 const HOST = '0.0.0.0'
 
@@ -24,7 +24,7 @@ export default ({ mode, root, base }) => {
       minify: false, //mode !== 'development' ? 'esbuild' : false, // 'esbuild',
       cssCodeSplit: false,
       rollupOptions: {
-        input: root ? '../../index.html' : '',
+        // input: root ? '../../index.html' : '',
         // external: ['vue', 'vue-router', 'vuex'],
         // input: {
         //   // main: `${path.resolve(__dirname, './src/main.ts')}`,
@@ -69,7 +69,6 @@ export default ({ mode, root, base }) => {
       vueJsx(),
 
       federation({
-        base: '/main',
         mode,
         remotes: {
           loginRemote: {
