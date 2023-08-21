@@ -1,1 +1,225 @@
-## vite 微前端框架
+[English](./README.md) | 简体中文
+
+## vite-micro 微前端框架
+
+<p align="center">
+  <a href="https://bestpractices.coreinfrastructure.org/projects/5752"><img src="https://bestpractices.coreinfrastructure.org/projects/5752/badge"></a>
+  <a href="https://api.securityscorecards.dev/projects/github.com/originjs/vite-plugin-federation"><img src="https://api.securityscorecards.dev/projects/github.com/originjs/vite-plugin-federation/badge"></a>
+  <a href="https://github.com/originjs/vite-plugin-federation/actions/workflows/ci.yml"><img src="https://github.com/originjs/vite-plugin-federation/actions/workflows/ci.yml/badge.svg?branch=main" alt="Build Status"></a>
+  <a href="https://www.npmjs.com/package/@originjs/vite-plugin-federation"><img src="https://badgen.net/npm/v/@originjs/vite-plugin-federation" alt="Version"></a>
+  <a href="https://nodejs.org/en/about/releases/"><img src="https://img.shields.io/node/v/vite.svg" alt="Node Compatibility"></a>
+  <a href="https://www.npmjs.com/package/@originjs/vite-plugin-federation"><img src="https://badgen.net/npm/license/@originjs/vite-plugin-federation" alt="License"></a>
+ </p>
+
+基于 vite 的微应用架构，每一个微应用相当于一个微服务，提供微组件 api 相互调用，底层基于@originjs/vite-plugin-federation,
+微组件的调用和执行方式按照模块联邦的思想，具有开发和生产 2 种执行方式。
+vite-micro 架构 在项目上采用 monorapo 的架构方式，只需在外层启动一次根服务器，后续的微应用可按需自动启动
+
+## 运行效果
+
+1. 生产模式：
+
+```
+cd example
+
+pnpm && pnpm run build
+
+node server.mjs
+```
+
+2. 开发模式：
+
+```
+cd example
+
+pnpm && pnpm run build
+
+pnpm run start
+```
+
+## 安装
+
+```
+npm install vite-micro
+```
+
+或者
+
+```
+yarn add vite-micro
+```
+
+## 使用
+
+vite-micro 架构需要采用 monorapo 项目结构，可参考 example 的项目结构
+packages 里面通常会有 2 个或 2 个以上的微应用，一个作为 Host 端，一个作为 Remote 端。
+
+#### 步骤一：Remote 端配置暴露的模块
+
+```js
+// vite.config.js
+import { federation } from 'vite-micro/node'
+export default {
+  build: {
+    // 如果是其他值，则import topLevelAwait from 'vite-plugin-top-level-await' 需要安装
+    target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
+    // 输出目录
+    outDir: `${path.resolve(__dirname, '../../dist')}`,
+    // 资源存放目录
+    assetsDir: `assets/user/${packageJson.version}`,
+  },
+  plugins: [
+    federation({
+      mode
+      // 需要暴露的模块,
+      //远程模块对外暴露的组件列表,远程模块必填
+      exposes: {
+        Button: './src/Button.vue',
+        entry: './src/bootstrap.ts',
+      },
+      shared: ['vue'],
+    }),
+  ],
+}
+
+// 这里的entry 对应的bootstrap.ts 来源于main.ts ,如果有以下配置，则需使用bootstrap.ts
+// rollupOptions: {
+//   input: main: `${path.resolve(__dirname, './src/main.ts')}`,
+// }
+```
+
+#### 步骤二：Host 端配置暴露的模块
+
+```js
+// vite.config.js
+import { federation } from 'vite-micro/node'
+export default {
+  build: {
+    // 如果是其他值，则import topLevelAwait from 'vite-plugin-top-level-await' 需要安装
+    target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
+    // 输出目录
+    outDir: `${path.resolve(__dirname, '../../dist')}`,
+    // 资源存放目录
+    assetsDir: `assets/main/${packageJson.version}`,
+  },
+  plugins: [
+    federation({
+      mode
+      remotes: {
+        loginRemote: {
+          url: `/assets/login`,
+        },
+        userRemote: {
+          url: '/assets/user',
+        },
+      },
+      shared: ['vue'],
+    }),
+  ],
+}
+```
+
+#### 步骤三：Host 端使用远程模块
+
+- 使用微组件方式
+
+```js
+import { createApp, defineAsyncComponent } from "vue";
+const app = createApp(Layout);
+...
+const RemoteButton = defineAsyncComponent(() => import("remote_app/Button"));
+app.component("RemoteButton", RemoteButton);
+app.mount("#root");
+```
+
+- 使用微应用入口方式
+
+```js
+import { entryImportVue } from 'vite-micro/client'
+
+const mainRoute = [
+  {
+    path: '/home',
+    component: () => import('../../views/Home.vue'),
+  },
+  {
+    path: '/user',
+    component: () => entryImportVue('remote_app/entry'),
+  },
+]
+
+// entryImportVue('remote_app/entry') 在本质上也是一个微组件，同样可以使用微组件方式调用
+```
+
+## 配置项说明
+
+### `mode：string`
+
+- 控制开发模式或生产模式，必填。
+
+### `filename：string`
+
+- 作为远程模块的入口文件，非必填，默认为`remoteEntry.js`
+
+### `exposes`
+
+- 作为远程模块，对外暴露的组件列表，远程模块必填。
+
+```js
+exposes: {
+    // '对外暴露的组件名称':'对外暴露的组件地址'
+    'Button': './src/components/Button.vue',
+    'Section': './src/components/Section.vue'
+}
+```
+
+---
+
+### `remotes`
+
+作为本地模块，引用的远端模块入口文件
+
+#### `url:string`
+
+- 远程模块地址，例如：`/assets/login`, `https://localhost:5011`， 该配置必填
+- url 在内部会生成 external 地址，`${url}/remoteEntrys.js`, 该地址会约定为远程模块的入口地址
+- url 可以是一个根据打包结构确定的相对地址，也可以是一个带有 http 的完整的外部地址
+
+```js
+remotes: {
+    // '{远端模块名称}Remote':'远端模块入口文件地址'
+    'loginRemote': {
+      url: `/assets/login`
+    },
+}
+```
+
+#### `devUrl:string`
+
+- 远程模块开发环境地址，例如：`/assets/login`, `https://localhost:5011`， 该配置非必填
+- devUrl 如果不配置，则默认取 url 地址或者项目的相对路径
+- **\*\***当 url 为相对地址且未配置 devUrl 时，远端模块名称格式需约定为 '{远端模块名称}Remote',， 在开发环境下，会根据远端模块名称生成远程模块入口地址
+
+```js
+remotes: {
+    // '远端模块名称':'远端模块入口文件地址'
+    'loginRemote': {
+      url: `https://www.vite-micro.com`,
+      devUrl: `https://localhost:5011`
+    },
+}
+```
+
+### `shared`
+
+本地模块和远程模块共享的依赖。本地模块需配置所有使用到的远端模块的依赖；远端模块需要配置对外提供的组件的依赖。
+
+- 是一个数组，可以是['vue',....], 也可以是[{...}]
+
+#### `name: string`
+
+- 共享组件的名称， 必填
+
+#### `requiredVersion: string`
+
+- 仅对 `remote` 端生效，规定所使用的 `host shared` 所需要的版本，当 `host` 端的版本不符合 `requiredVersion` 要求时，会使用自己的 `shared` 模块，默认不启用该功能
