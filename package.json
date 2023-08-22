@@ -31,6 +31,16 @@
   "engines": {
     "node": "^14.18.0 || >=16.0.0"
   },
+  "keywords": [
+    "vite",
+    "micro",
+    "Micro frontends",
+    "Micro Applications"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monkeyfuck/vite-micro"
+  },
   "author": "flyrain",
   "license": "MIT",
   "dependencies": {
