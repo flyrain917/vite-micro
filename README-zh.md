@@ -211,7 +211,7 @@ exposes: {
 
 ### `remotes`
 
-作为本地模块，引用的远端模块入口文件
+Host side references the resource entry file configuration of the Remote side
 
 #### `url:string`
 

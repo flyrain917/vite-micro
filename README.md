@@ -1,16 +1,16 @@
 [简体中文](./README-zh.md) | English
 
-## [vite-micro 微前端框架](https://github.com/zhutao315/videoRTP)
+## [vite-micro - Micro front-end framework](https://github.com/zhutao315/videoRTP)
 
 [![npm](https://img.shields.io/npm/v/vite-micro.svg)](https://www.npmjs.com/package/vite-micro)
 
-基于 vite 的微应用架构，每一个微应用相当于一个微服务，提供微组件 api 相互调用，底层基于@originjs/vite-plugin-federation,
-微组件的调用和执行方式按照模块联邦的思想，具有开发和生产 2 种执行方式。
-vite-micro 架构 在项目上采用 monorapo 的架构方式，只需在外层启动一次根服务器，后续的微应用可按需自动启动
+Based on the vite micro application architecture, each micro application is equivalent to a micro service, providing micro component APIs for mutual invocation. The underlying layer is based on @ originjs/vite plugin education.
+The invocation and execution methods of microcomponents follow the concept of module federation, with two execution methods: development and production.
+The vite-micro front-end framework adopts the front-end architecture of Monorapo in the project, which only requires starting the root server once in the outer layer, and subsequent micro applications can be automatically started as needed.
 
-## 运行效果
+## The running effect
 
-1. 生产模式：
+1. production：
 
 ```
 cd example
@@ -20,7 +20,7 @@ pnpm && pnpm run build
 node server.mjs
 ```
 
-2. 开发模式：
+2. development：
 
 ```
 cd example
@@ -28,42 +28,42 @@ cd example
 pnpm && pnpm run start
 ```
 
-## 安装
+## Install
 
 ```
 npm install vite-micro
 ```
 
-或者
+Or
 
 ```
 yarn add vite-micro
 ```
 
-## 使用
+## How to Use
 
-vite-micro 架构需要采用 monorapo 项目结构，可参考 example 的项目结构，</br>
-packages 里面通常会有 2 个或 2 个以上的微应用，一个作为 Host 端，一个作为 Remote 端。
+The vite-micro front-end framework needs to adopt the Monorapo project structure, which can be referenced in the example project conclusion，</br>
+There are usually two or more micro applications in packages, one as the Host side and one as the Remote side.
 
-#### 步骤一：Remote 端配置暴露的模块
+#### Step 1: Configure exposed modules on the Remote side
 
 ```js
 // vite.config.js
 import { federation } from 'vite-micro/node'
 export default {
   build: {
-    // 如果出现top level await问题，则需使用import topLevelAwait from 'vite-plugin-top-level-await'
+    // If there is a top level await issue, you need to use import topLevelAwait from 'vite plugin top level await'
     target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
-    // 输出目录
+    // Output Directory
     outDir: `${path.resolve(__dirname, '../../dist')}`,
-    // 资源存放目录
+    // Resource storage directory
     assetsDir: `assets/user/${packageJson.version}`,
   },
   plugins: [
     federation({
       mode
-      // 需要暴露的模块,
-      //远程模块对外暴露的组件列表,远程模块必填
+      // Modules that need to be exposed,
+      // The list of components exposed by remote modules to the public is mandatory for remote modules
       exposes: {
         Button: './src/Button.vue',
         entry: './src/bootstrap.ts',
@@ -75,7 +75,7 @@ export default {
 
 ```
 
-- 这里的 entry 对应的 bootstrap.ts 来源于 main.ts(项目的入口文件) ,如果有以下配置，则需使用 bootstrap.ts,否则会产生冲突错误
+- The "bootstrap.ts" corresponding to the entry here comes from "main.ts" (the entry file of the project). If there are the following configurations, "bootstrap.ts" needs to be used, otherwise conflicting errors will occur
 
 ```
 rollupOptions: {
@@ -85,7 +85,7 @@ rollupOptions: {
 export { mount, unMount } from './main'
 ```
 
-#### 步骤二：Remote 端配置应用入口文件（如果 Host 端需要调用 Remote 微应用）
+#### Step 2: Configure the application entry file on the Remote side (if the Host side needs to call the Remote micro application)
 
 ```
 // main.ts
@@ -96,7 +96,7 @@ let app: any = null
 export async function mount(name: string, base: string) {
   app = createApp(App)
 
-  // 其他配置......
+  // Other configurations......
 
   app.mount(name)
 
@@ -112,21 +112,21 @@ export function unMount() {
 
 ```
 
-- Host 端拿到 Remote 微应用入口文件后，会执行里面的 mount 方法初始化并挂载微应用
-- mount 和 unmount 方法 约定导出
+- After receiving the Remote micro application entry file, the host side will execute the mount method inside to initialize and mount the micro application
+- mExport according to the conventions of the mount method and unmount method
 
-#### 步骤三：Host 端配置暴露的模块
+#### Step 3: Configure exposed modules on the host side
 
 ```js
 // vite.config.js
 import { federation } from 'vite-micro/node'
 export default {
   build: {
-    // 如果出现top level await问题，则需使用import topLevelAwait from 'vite-plugin-top-level-await'
+    // If there is a top level await issue, you need to use import topLevelAwait from 'vite plugin top level await'
     target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
-    // 输出目录
+    // Output Directory
     outDir: `${path.resolve(__dirname, '../../dist')}`,
-    // 资源存放目录
+    // Resource storage directory
     assetsDir: `assets/main/${packageJson.version}`,
   },
   plugins: [
@@ -146,9 +146,9 @@ export default {
 }
 ```
 
-#### 步骤四：Host 端使用远程模块
+#### Step 4: Using Remote Modules on the Host Side
 
-- 使用微组件方式
+- Using micro components
 
 ```js
 import { createApp, defineAsyncComponent } from "vue";
@@ -159,7 +159,7 @@ app.component("RemoteButton", RemoteButton);
 app.mount("#root");
 ```
 
-- 使用微应用入口方式
+- Using micro application entry
 
 ```js
 import { entryImportVue } from 'vite-micro/client'
@@ -175,26 +175,26 @@ const mainRoute = [
   },
 ]
 
-// entryImportVue('remote_app/entry') 在本质上也是一个微组件，同样可以使用微组件方式调用
+// entryImportVue('remote_app/entry') Essentially, it is also a micro component that can be called using the micro component method
 ```
 
-## 配置项说明
+## Configuration Item Description
 
 ### `mode：string`
 
-- 控制开发模式或生产模式，必填。
+- Control development mode or production mode, required.
 
 ### `filename：string`
 
-- 作为远程模块的入口文件，非必填，默认为`remoteEntry.js`
+- As the entry file for the remote module, it is not mandatory and defaults to 'remoteEntry.js'`
 
 ### `exposes`
 
-- 作为远程模块，对外暴露的组件列表，远程模块必填。
+- As a remote module, the list of exposed components must be filled out by the remote module.
 
 ```js
 exposes: {
-    // '对外暴露的组件名称':'对外暴露的组件地址'
+    // 'Name of exposed component': 'Address of exposed component'
     'Button': './src/components/Button.vue',
     'Section': './src/components/Section.vue'
 }
@@ -204,7 +204,7 @@ exposes: {
 
 ### `remotes`
 
-作为本地模块，引用的远端模块入口文件
+Host 端引用 Remote 端的资源入口文件配置
 
 #### `url:string`
 
