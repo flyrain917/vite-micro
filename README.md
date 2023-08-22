@@ -1,15 +1,8 @@
-[English](./README.md) | 简体中文
+[简体中文](./README-zh.md) | English
 
-## vite-micro 微前端框架
+## [vite-micro 微前端框架](https://github.com/zhutao315/videoRTP)
 
-<p align="center">
-  <a href="https://bestpractices.coreinfrastructure.org/projects/5752"><img src="https://bestpractices.coreinfrastructure.org/projects/5752/badge"></a>
-  <a href="https://api.securityscorecards.dev/projects/github.com/originjs/vite-plugin-federation"><img src="https://api.securityscorecards.dev/projects/github.com/originjs/vite-plugin-federation/badge"></a>
-  <a href="https://github.com/originjs/vite-plugin-federation/actions/workflows/ci.yml"><img src="https://github.com/originjs/vite-plugin-federation/actions/workflows/ci.yml/badge.svg?branch=main" alt="Build Status"></a>
-  <a href="https://www.npmjs.com/package/@originjs/vite-plugin-federation"><img src="https://badgen.net/npm/v/@originjs/vite-plugin-federation" alt="Version"></a>
-  <a href="https://nodejs.org/en/about/releases/"><img src="https://img.shields.io/node/v/vite.svg" alt="Node Compatibility"></a>
-  <a href="https://www.npmjs.com/package/@originjs/vite-plugin-federation"><img src="https://badgen.net/npm/license/@originjs/vite-plugin-federation" alt="License"></a>
- </p>
+[![npm](https://img.shields.io/npm/v/vite-micro.svg)](https://www.npmjs.com/package/vite-micro)
 
 基于 vite 的微应用架构，每一个微应用相当于一个微服务，提供微组件 api 相互调用，底层基于@originjs/vite-plugin-federation,
 微组件的调用和执行方式按照模块联邦的思想，具有开发和生产 2 种执行方式。

@@ -32,9 +32,7 @@ node server.mjs
 ```
 cd example
 
-pnpm && pnpm run build
-
-pnpm run start
+pnpm && pnpm run start
 ```
 
 ## 安装
@@ -51,7 +49,7 @@ yarn add vite-micro
 
 ## 使用
 
-vite-micro 架构需要采用 monorapo 项目结构，可参考 example 的项目结构
+vite-micro 架构需要采用 monorapo 项目结构，可参考 example 的项目结构，</br>
 packages 里面通常会有 2 个或 2 个以上的微应用，一个作为 Host 端，一个作为 Remote 端。
 
 #### 步骤一：Remote 端配置暴露的模块
@@ -61,7 +59,7 @@ packages 里面通常会有 2 个或 2 个以上的微应用，一个作为 Host
 import { federation } from 'vite-micro/node'
 export default {
   build: {
-    // 如果是其他值，则import topLevelAwait from 'vite-plugin-top-level-await' 需要安装
+    // 如果出现top level await问题，则需使用import topLevelAwait from 'vite-plugin-top-level-await'
     target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
     // 输出目录
     outDir: `${path.resolve(__dirname, '../../dist')}`,
@@ -82,20 +80,56 @@ export default {
   ],
 }
 
-// 这里的entry 对应的bootstrap.ts 来源于main.ts ,如果有以下配置，则需使用bootstrap.ts
-// rollupOptions: {
-//   input: main: `${path.resolve(__dirname, './src/main.ts')}`,
-// }
 ```
 
-#### 步骤二：Host 端配置暴露的模块
+- 这里的 entry 对应的 bootstrap.ts 来源于 main.ts(项目的入口文件) ,如果有以下配置，则需使用 bootstrap.ts,否则会产生冲突错误
+
+```
+rollupOptions: {
+  input: main: `${path.resolve(__dirname, './src/main.ts')}`,
+}
+// bootstrap.ts
+export { mount, unMount } from './main'
+```
+
+#### 步骤二：Remote 端配置应用入口文件（如果 Host 端需要调用 Remote 微应用）
+
+```
+// main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+
+let app: any = null
+export async function mount(name: string, base: string) {
+  app = createApp(App)
+
+  // 其他配置......
+
+  app.mount(name)
+
+  console.log('start mount!!!', name)
+
+  return app
+}
+
+export function unMount() {
+  console.log('start unmount --->')
+  app && app.$destroy()
+}
+
+```
+
+- Host 端拿到 Remote 微应用入口文件后，会执行里面的 mount 方法初始化并挂载微应用
+- mount 和 unmount 方法 约定导出
+
+#### 步骤三：Host 端配置暴露的模块
 
 ```js
 // vite.config.js
 import { federation } from 'vite-micro/node'
 export default {
   build: {
-    // 如果是其他值，则import topLevelAwait from 'vite-plugin-top-level-await' 需要安装
+    // 如果出现top level await问题，则需使用import topLevelAwait from 'vite-plugin-top-level-await'
     target: ['chrome89', 'edge89', 'firefox89', 'safari15'],
     // 输出目录
     outDir: `${path.resolve(__dirname, '../../dist')}`,
@@ -119,7 +153,7 @@ export default {
 }
 ```
 
-#### 步骤三：Host 端使用远程模块
+#### 步骤四：Host 端使用远程模块
 
 - 使用微组件方式
 
@@ -223,3 +257,16 @@ remotes: {
 #### `requiredVersion: string`
 
 - 仅对 `remote` 端生效，规定所使用的 `host shared` 所需要的版本，当 `host` 端的版本不符合 `requiredVersion` 要求时，会使用自己的 `shared` 模块，默认不启用该功能
+
+## Browsers support
+
+Modern browsers does not support IE browser
+
+| IEdge / IE | Firefox         | Chrome          | Safari          |
+| ---------- | --------------- | --------------- | --------------- |
+| Edge       | last 2 versions | last 2 versions | last 2 versions |
+
+## 其他
+
+- 目前加载的远程脚步暂未支持沙箱功能，代码需要靠规范约束
+- 如果您认可此框架并对觉得对您有帮助，希望能给我点颗星 ^\_^
