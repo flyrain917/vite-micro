@@ -8,10 +8,8 @@
   },
   "main": "dist/node/index.cjs",
   "module": "dist/node/index.mjs",
-  "types": "./dist/node/index.d.ts",
+  "types": "types/index.d.ts",
   "exports": {
-    "./dist/node/index": "./dist/node/index.cjs",
-    "./dist/client/index": "./dist/client/index.js",
     "./client": "./dist/client/index.js",
     "./node": {
       "types": "./types/index.d.ts",
@@ -24,14 +22,16 @@
     "unbuild": "unbuild"
   },
   "files": [
+    "dist",
     "src",
-    "lib"
+    "types",
+    "README.md",
+    "package.json"
   ],
-  "repository": {
-    "type": "git",
-    "url": ""
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
   },
-  "author": "flyRain",
+  "author": "flyrain",
   "license": "MIT",
   "dependencies": {
     "@originjs/vite-plugin-federation": "^1.1.9",
