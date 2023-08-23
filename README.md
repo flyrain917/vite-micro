@@ -204,17 +204,17 @@ exposes: {
 
 ### `remotes`
 
-Host 端引用 Remote 端的资源入口文件配置
+Host side references the resource entry file configuration of the Remote side
 
 #### `url:string`
 
-- 远程模块地址，例如：`/assets/login`, `https://localhost:5011`， 该配置必填
-- url 在内部会生成 external 地址，`${url}/remoteEntrys.js`, 该地址会约定为远程模块的入口地址
-- url 可以是一个根据打包结构确定的相对地址，也可以是一个带有 http 的完整的外部地址
+- Remote module address, for example: `/sets/login` `https://localhost:5011`, this configuration is required
+- The URL internally generates an external address, `${URL}/remoteEntries. js`, which will be used as the entry address for the remote module
+- The URL can be a relative address determined based on the packaging structure, or it can be a complete external address starting with http
 
 ```js
 remotes: {
-    // '{远端模块名称}Remote':'远端模块入口文件地址'
+    // '{Remote Module Name} Remote': 'Remote Module Entry File Address'
     'loginRemote': {
       url: `/assets/login`
     },
@@ -223,13 +223,13 @@ remotes: {
 
 #### `devUrl:string`
 
-- 远程模块开发环境地址，例如：`/assets/login`, `https://localhost:5011`， 该配置非必填
-- devUrl 如果不配置，则默认取 url 地址或者项目的相对路径
-- **\*\***当 url 为相对地址且未配置 devUrl 时，远端模块名称格式需约定为 '{远端模块名称}Remote',， 在开发环境下，会根据远端模块名称生成远程模块入口地址
+- Remote module development environment address, for example: '/sets/login'`https://localhost:5011`, this configuration is not required
+- If devUrl is not configured, it defaults to the URL address or the relative path of the project
+- **\*\***When the URL is a relative address and devUrl is not configured, the format of the remote module name needs to be specified as `{Remote Module Name} Remote`. In the development environment, the remote module entry address will be generated based on the remote module name
 
 ```js
 remotes: {
-    // '远端模块名称':'远端模块入口文件地址'
+    // '{Remote Module Name} Remote': 'Remote Module Entry File Address'
     'loginRemote': {
       url: `https://www.vite-micro.com`,
       devUrl: `https://localhost:5011`
@@ -239,17 +239,17 @@ remotes: {
 
 ### `shared`
 
-本地模块和远程模块共享的依赖。本地模块需配置所有使用到的远端模块的依赖；远端模块需要配置对外提供的组件的依赖。
+The shared dependencies between the Host and Remote modules. The host module needs to configure the dependencies of all remote modules used; The remote module needs to configure dependencies on externally provided components.
 
-- 是一个数组，可以是['vue',....], 也可以是[{...}]
+- It is an array, which can be ['vue ',...], or [{...}]
 
 #### `name: string`
 
-- 共享组件的名称， 必填
+- The name of the shared component, required
 
 #### `requiredVersion: string`
 
-- 仅对 `remote` 端生效，规定所使用的 `host shared` 所需要的版本，当 `host` 端的版本不符合 `requiredVersion` 要求时，会使用自己的 `shared` 模块，默认不启用该功能
+- Only effective for the `remote` module, specifying the required version of the `host shared` used. When the version of the `host` module does not meet the 'required Version' requirements, the `shared` module will be used, and this feature will not be enabled by default
 
 ## Browsers support
 
@@ -261,5 +261,5 @@ Modern browsers does not support IE browser
 
 ## 其他
 
-- 目前加载的远程脚步暂未支持沙箱功能，代码需要靠规范约束
-- 如果您认可此框架并对觉得对您有帮助，希望能给我点颗星 ^\_^
+- The remote footsteps currently loaded do not support sandbox functionality, and the code needs to be constrained by specifications
+- If you agree with this framework and find it helpful to you, I hope you can give me a star ^\_^

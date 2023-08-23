@@ -211,7 +211,7 @@ exposes: {
 
 ### `remotes`
 
-Host side references the resource entry file configuration of the Remote side
+Host 端引用 Remote 端的资源入口文件配置
 
 #### `url:string`
 
