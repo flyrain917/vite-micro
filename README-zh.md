@@ -296,4 +296,5 @@ Modern browsers does not support IE browser
 - 目前加载的远程脚步暂未支持沙箱功能，代码需要靠规范约束
 - 如果您认可此框架并对觉得对您有帮助，希望能给我点颗星 ^\_^
 - 如果此框架给您的工作事业带来价值，希望能给我一些捐助，创作不易。
-  ![Image text](https://github.com/monkeyfuck/image-blob-flyRain/blob/master/images/wechat-pay.jpg)
+
+  ![Image text](https://user-images.githubusercontent.com/9763250/263659580-28cce59e-2b16-485c-935c-deefdde3b03f.jpg)

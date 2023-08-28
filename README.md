@@ -289,4 +289,5 @@ Modern browsers does not support IE browser
 - The remote footsteps currently loaded do not support sandbox functionality, and the code needs to be constrained by specifications.
 - If you agree with this framework and find it helpful to you, I hope you can give me a star ^\_^
 - If this framework brings value to your work career, I hope you can give me some donations, as it is not easy to create.
-  ![Image text](https://github.com/monkeyfuck/image-blob-flyRain/blob/master/images/wechat-pay.jpg)
+
+  ![Image text](https://user-images.githubusercontent.com/9763250/263659580-28cce59e-2b16-485c-935c-deefdde3b03f.jpg)
