@@ -1,4 +1,4 @@
-import { entryImportVue } from 'vite-micro/client'
+import { entryImportVue, remoteImport } from 'vite-micro/client'
 
 const mainRoute = [
   {
@@ -16,6 +16,10 @@ const mainRoute = [
   {
     path: '/user',
     component: () => entryImportVue('userRemote/entry'),
+  },
+  {
+    path: '/button',
+    component: () => remoteImport('loginRemote/Button'),
   },
 ]
 

@@ -4,6 +4,7 @@
       <p><router-link to="/home">Go to Home</router-link></p>
       <p><router-link to="/login">Go to Login</router-link></p>
       <p><router-link to="/user">Go to User</router-link></p>
+      <p><router-link to="/button">Go to Button</router-link></p>
     </div>
     <h2>this is Main module</h2>
     <router-view />

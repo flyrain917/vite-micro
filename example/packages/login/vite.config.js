@@ -74,6 +74,7 @@ export default ({ mode }) => {
         exposes: {
           //远程模块对外暴露的组件列表,远程模块必填
           entry: './src/bootstrap.ts',
+          Button: './src/views/Button.vue',
         },
         shared: ['vue'], //本地模块和远程模块共享的依赖。本地模块需配置所有使用到的远端模块的依赖；远端模块需要配置对外提供的组件的依赖。
       }),

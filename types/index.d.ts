@@ -68,6 +68,11 @@ declare interface MicroRemoteObject {
   devUrl?: string
 
   external?: string
+
+  /**
+   * 远程模块入口文件，本地模块可通过vite.config.ts的remotes引入, 默认为remoteEntrys.js 引入最新的版本文件
+   */
+  filename?: string
 }
 
 /**

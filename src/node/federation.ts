@@ -15,7 +15,6 @@ const resolveShareVirsualModuleId = '\0' + shareVirsualModuleId
 
 const federationDefaultOption = {
   isRootService: true, // 判断启动服务器的模式，是否为按需启动的模式
-  filename: 'remoteEntry.js', //远程模块入口文件，本地模块可通过vite.config.ts的remotes引入
   shared: [],
 }
 
@@ -64,11 +63,11 @@ function generateCommonRemoteEntryFile(version: string) {
 
 function getDevRemoteFileUrl(options: federationOptions | { remotes: any }, remoteName: string, base: string) {
   // 这里外部其他项目组件引入配置devUrl
-  const { devUrl, url } = options.remotes[remoteName]
+  const { devUrl, url, filename } = options.remotes[remoteName]
 
   if (devUrl) return `${devUrl}/@id/__remoteEntryHelper__`
 
-  if (url.startWith('http')) return `${url}/@id/__remoteEntryHelper__`
+  if (url.startWith('http')) return url + `/${filename || 'remoteEntrys.js'}?version=v${Date.now()}`
 
   return `${host}/${base}/@id/__remoteEntryHelper__`
 }
@@ -82,7 +81,9 @@ function parseRemotes(options: federationOptions) {
       remotes[remoteName].external = getDevRemoteFileUrl(options, remoteName, base)
     } else {
       remotes[remoteName].url = remotes[remoteName].url || `/assets/${base}`
-      remotes[remoteName].external = remotes[remoteName].url + `/remoteEntrys.js?version=v${Date.now()}`
+      remotes[remoteName].external =
+        remotes[remoteName].external ||
+        remotes[remoteName].url + `/${remotes[remoteName].filename || 'remoteEntrys.js'}?version=v${Date.now()}`
     }
     remotes[remoteName].from = 'vite'
     remotes[remoteName].format = 'esm'

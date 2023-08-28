@@ -1,6 +1,6 @@
 {
   "name": "vite-micro",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "基于vite 微前端框架",
   "type": "module",
   "bin": {

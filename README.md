@@ -152,9 +152,10 @@ export default {
 
 ```js
 import { createApp, defineAsyncComponent } from "vue";
+import { remoteImport } from 'vite-micro/client'
 const app = createApp(Layout);
 ...
-const RemoteButton = defineAsyncComponent(() => import("remote_app/Button"));
+const RemoteButton = defineAsyncComponent(() => remoteImport("remote_app/Button"));
 app.component("RemoteButton", RemoteButton);
 app.mount("#root");
 ```
@@ -162,7 +163,7 @@ app.mount("#root");
 - Using micro application entry
 
 ```js
-import { entryImportVue } from 'vite-micro/client'
+import { entryImportVue, remoteImport } from 'vite-micro/client'
 
 const mainRoute = [
   {
@@ -173,9 +174,33 @@ const mainRoute = [
     path: '/user',
     component: () => entryImportVue('remote_app/entry'),
   },
+  {
+    path: '/button',
+    component: () => remoteImport('remote_app/Button'),
+  },
 ]
+```
 
-// entryImportVue('remote_app/entry') Essentially, it is also a micro component that can be called using the micro component method
+- EntryImportVue ('remote_app/entry ') is essentially a microcomponent that can also be called using the microcomponent method
+- For scripts exposed by the Remote module, sometimes they are not Vue components, may be React components or other, or may be entry files for remote applications. This type of script is clearly not directly consumed by the Host module Vue project. The entryImportVue internal uses a simple Vue component to wrap these scripts together to form a component that can be directly used in the Vue project
+- For remote components that can be directly referenced by the Host module, simply use remoteImport
+
+#### Version management
+
+- There are two ways to remotely introduce version control for components, with the latest version being introduced by default
+
+```js
+remotes: {
+    // By default, “the remoteEntries.js” file of the loginRemote application will be introduced, which will load the latest version of the remoteEntry file of the application
+    'loginRemote': {
+      url: `/assets/login`
+    },
+    // Will import '/assets/login/0.0.1/remoteEntry. js' as the entry file
+    'userRemote': {
+      url: `/assets/login`,
+      filename: '0.0.1/remoteEntry.js'
+    },
+}
 ```
 
 ## Configuration Item Description
@@ -183,10 +208,6 @@ const mainRoute = [
 ### `mode：string`
 
 - Control development mode or production mode, required.
-
-### `filename：string`
-
-- As the entry file for the remote module, it is not mandatory and defaults to 'remoteEntry.js'`
 
 ### `exposes`
 
@@ -236,6 +257,10 @@ remotes: {
     },
 }
 ```
+
+#### `filename：string`
+
+- As the entry file for the remote module, it is not required and defaults to 'remoteEntries.js'. Please refer to version management for specific usage methods
 
 ### `shared`
 

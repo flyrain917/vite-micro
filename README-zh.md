@@ -159,9 +159,10 @@ export default {
 
 ```js
 import { createApp, defineAsyncComponent } from "vue";
+import { remoteImport } from 'vite-micro/client'
 const app = createApp(Layout);
 ...
-const RemoteButton = defineAsyncComponent(() => import("remote_app/Button"));
+const RemoteButton = defineAsyncComponent(() => remoteImport("remote_app/Button"));
 app.component("RemoteButton", RemoteButton);
 app.mount("#root");
 ```
@@ -169,7 +170,7 @@ app.mount("#root");
 - 使用微应用入口方式
 
 ```js
-import { entryImportVue } from 'vite-micro/client'
+import { entryImportVue, remoteImport } from 'vite-micro/client'
 
 const mainRoute = [
   {
@@ -180,9 +181,33 @@ const mainRoute = [
     path: '/user',
     component: () => entryImportVue('remote_app/entry'),
   },
+  {
+    path: '/button',
+    component: () => remoteImport('remote_app/Button'),
+  },
 ]
+```
 
-// entryImportVue('remote_app/entry') 在本质上也是一个微组件，同样可以使用微组件方式调用
+- entryImportVue('remote_app/entry') 在本质上也是一个微组件，同样可以使用微组件方式调用
+- 对于 Remote 模块暴露的脚本有时并非 vue 组件，也可能是 React 组件或其他，也可能是远程应用的入口文件，这种类型的脚本很明显是无法直接被 Host 模块 vue 项目所消费的，entryImportVue 的内部使用一个简单的 vue 组件将这些脚本包裹进来形成一个可以直接被 vue 项目使用的组件
+- 对于可以直接被 Host 模块直接引用的远程组件，直接使用 remoteImport 即可
+
+#### 版本管理
+
+- 提供远程引入组件的版本控制的 2 种方式，默认引入最新版
+
+```js
+remotes: {
+    // 默认会引入loginRemote 应用的remoteEntrys.js ， 这个文件会去加载该应用最新版本的remoteEntry文件
+    'loginRemote': {
+      url: `/assets/login`
+    },
+    // 会将 `/assets/login/0.0.1/remoteEntry.js` 作为入口文件引入
+    'userRemote': {
+      url: `/assets/login`,
+      filename: '0.0.1/remoteEntry.js'
+    },
+}
 ```
 
 ## 配置项说明
@@ -190,10 +215,6 @@ const mainRoute = [
 ### `mode：string`
 
 - 控制开发模式或生产模式，必填。
-
-### `filename：string`
-
-- 作为远程模块的入口文件，非必填，默认为`remoteEntry.js`
 
 ### `exposes`
 
@@ -243,6 +264,10 @@ remotes: {
     },
 }
 ```
+
+#### `filename：string`
+
+- 作为远程模块的入口文件，非必填，默认为`remoteEntrys.js`， 具体使用方式参考版本管理
 
 ### `shared`
 
