@@ -1,6 +1,6 @@
 {
   "name": "vite-micro",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "基于vite 微前端框架",
   "type": "module",
   "bin": {
@@ -44,19 +44,21 @@
   },
   "author": "flyrain",
   "license": "MIT",
+  "peerDependencies": {
+    "vite": "^3.0.9",
+    "koa": "^2.13.4"
+  },
   "dependencies": {
     "@originjs/vite-plugin-federation": "^1.1.9",
     "estree-walker": "^3.0.3",
     "cac": "^6.7.14",
     "fs-extra": "latest",
-    "koa": "^2.13.4",
     "koa-connect": "^2.1.0",
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "koa-static-cache": "^5.1.4",
     "magic-string": "^0.30.2",
-    "tslib": "^2.6.1",
-    "vite": "^3.0.9"
+    "tslib": "^2.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
