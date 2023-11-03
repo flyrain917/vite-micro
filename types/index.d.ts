@@ -84,3 +84,5 @@ declare interface ExposesOption {
    */
   [index: string]: string
 }
+
+export type * from './client'

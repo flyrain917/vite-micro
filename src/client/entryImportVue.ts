@@ -1,26 +1,26 @@
 import { defineComponent, h } from 'vue'
 import { remoteImport, splitName } from './import'
+import { createShadow, deleteShadow } from './shadow'
+import type { ImportCompConfig } from '../../types/client'
 
 interface RemoteEntry {
   mount: Function
   unMount: Function
 }
 
-interface CompConfig {
-  mounted: Function
-  unMounted: Function
-  destroyed: Function
-}
-
-export function getComp(name: string, base: string, mountFunc: Function, unMountFunc: Function, config: CompConfig) {
+export function getComp(name: string, base: string, mountFunc: Function, unMountFunc: Function, config: ImportCompConfig) {
   return defineComponent({
     async mounted() {
-      await (mountFunc && mountFunc(`#${name}`, base))
+      let shadow = config.shadow ? createShadow(name, config) : null
+
+      await (mountFunc && mountFunc(shadow || `#${name}`, base, `#${name}`))
       return config.mounted && config.mounted()
     },
     async beforeDestroy() {
       await (unMountFunc && unMountFunc())
-      return config.unMounted && config.unMounted()
+      const res = await (config.unMounted && config.unMounted())
+      config.shadow && deleteShadow(name, config)
+      return res
     },
     destroyed() {
       return config.destroyed && config.destroyed()
@@ -31,7 +31,7 @@ export function getComp(name: string, base: string, mountFunc: Function, unMount
   })
 }
 
-export async function entryImportVue(name: string, config: CompConfig) {
+export async function entryImportVue(name: string, config: ImportCompConfig) {
   const [remoteName, remoteScript] = splitName(name)
   const remote: RemoteEntry = await remoteImport(name)
 
