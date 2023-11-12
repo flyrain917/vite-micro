@@ -36,7 +36,7 @@ if (debugIndex > 0) {
   }
 }
 function start() {
-  return import('../node/cli.js')
+  return import('../dist/node/cli.js')
 }
 
 if (profileIndex > 0) {

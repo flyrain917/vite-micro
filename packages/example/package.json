@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "serve": "node --loader ts-node/esm ./node_modules/vite-micro/src/bin/micro.js",
-    "start": "vite-micro serve",
+    "start": "micro serve",
     "build": "pnpm --parallel --filter='./packages/*' build"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "vue-router": "^4.0.16"
   },
   "devDependencies": {
+    "vite-micro": "workspace:*",
     "@babel/core": "^7.19.6",
     "@babel/node": "^7.19.1",
     "@babel/preset-env": "^7.19.4",

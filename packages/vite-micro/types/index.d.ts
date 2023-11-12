@@ -1,6 +1,6 @@
 import type { RemotesObject } from '@originjs/vite-plugin-federation'
 
-declare interface federationOptions {
+export declare interface federationOptions {
   /**
    * 判断启动服务器的模式，是否为按需启动的模式
    */
@@ -35,9 +35,9 @@ declare interface federationOptions {
 /**
  *  需要分享的全局组件的配置
  */
-type SharedOption = string | SharedObject
+export type SharedOption = string | SharedObject
 
-declare interface SharedObject {
+export declare interface SharedObject {
   /**
    *  组件的名称
    */
@@ -52,11 +52,11 @@ declare interface SharedObject {
 /**
  *  远程模块的相关配置
  */
-declare interface RemotesOption {
+export declare interface RemotesOption {
   [index: string]: MicroRemoteObject | RemotesObject
 }
 
-declare interface MicroRemoteObject {
+export declare interface MicroRemoteObject {
   /**
    *  远程模块的地址，用于生产环境
    */
@@ -78,7 +78,7 @@ declare interface MicroRemoteObject {
 /**
  *  应用透出接口的配置
  */
-declare interface ExposesOption {
+export declare interface ExposesOption {
   /**
    *  组件名称：组件相对根目录地址
    */

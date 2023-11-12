@@ -1,5 +1,5 @@
 import { defineBuildConfig } from 'unbuild'
-import pkg from './package.json'
+import pkg from '../../package.json'
 
 // externals 不好使，所以废弃
 

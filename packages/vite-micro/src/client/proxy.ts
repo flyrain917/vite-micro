@@ -13,6 +13,8 @@
 
  */
 
+const document: any = window.document
+
 const shadowMaps: any = {}
 
 export function registerShadowProxy(remote: string, shadow: ShadowRoot | undefined) {

@@ -13,11 +13,11 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [],
-    "typeRoots": ["./node_modules/@types/", "types"],
+    "typeRoots": [],
     "paths": {
       "@/*": [
         "./src*"
-      ]
+      ],
     },
     "lib": [
       "esnext",
@@ -31,7 +31,7 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "**/types/*.d.ts"
+    "types/*.d.ts"
   ],
   "exclude": [
     "node_modules",

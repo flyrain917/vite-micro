@@ -15,11 +15,11 @@ export function createNodeConfig(config) {
       name: config.name,
       // file: config.file,
       format: 'esm',
-      sourcemap: false,
+      sourcemap: true,
       exports: 'named',
     },
 
-    external: ['path', ...Object.keys(pkg.dependencies), ...Object.keys(pkg.devDependencies)],
+    external: ['fs', 'path', ...Object.keys(pkg.dependencies), ...Object.keys(pkg.devDependencies)],
 
     plugins: [
       nodeResolve({ preferBuiltins: true }),
@@ -50,11 +50,11 @@ export function createClientConfig(config) {
       name: config.name,
       file: config.file,
       format: 'esm',
-      sourcemap: false,
+      sourcemap: true,
       exports: 'named',
     },
 
-    external: ['vue'],
+    external: ['vue', '__federation__'],
     plugins: [
       nodeResolve({ preferBuiltins: true }),
       typescript(),

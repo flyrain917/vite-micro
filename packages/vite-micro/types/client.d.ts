@@ -1,9 +1,3 @@
-declare module '__federation__'
-
-declare interface Window {
-  [p: string]: any
-}
-
 /**
  * entryImport(Vue/React/*) 引入组件时，加载组件的配置
  */

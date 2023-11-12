@@ -1,0 +1,89 @@
+{
+  "name": "vite-micro",
+  "version": "0.0.5",
+  "private": true,
+  "description": "基于vite 微前端框架",
+  "type": "module",
+  "bin": {
+    "micro": "./bin/micro.js"
+  },
+  "main": "./dist/node/index.cjs",
+  "module": "./dist/node/index.mjs",
+  "types": "./types/index.d.ts",
+  "exports": {
+    "./client": "./dist/client/index.js",
+    "./node": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/node/index.mjs",
+      "require": "./dist/node/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "rimraf dist && vite build && rollup --config rollup.config.js",
+    "unbuild": "unbuild"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "src",
+    "types",
+    "README.md",
+    "README-zh.md",
+    "package.json"
+  ],
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  },
+  "keywords": [
+    "vite",
+    "micro",
+    "Micro frontends",
+    "Micro Applications"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flyrain917/vite-micro"
+  },
+  "author": "flyrain",
+  "license": "MIT",
+  "peerDependencies": {
+    "vite": "^3.0.9",
+    "koa": "^2.13.4"
+  },
+  "dependencies": {
+    "@originjs/vite-plugin-federation": "^1.1.9",
+    "estree-walker": "^3.0.3",
+    "cac": "^6.7.14",
+    "fs-extra": "latest",
+    "koa-connect": "^2.1.0",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
+    "koa-static-cache": "^5.1.4",
+    "magic-string": "^0.30.2",
+    "tslib": "^2.6.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-external-helpers": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.18.2",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/runtime-corejs3": "^7.18.3",
+    "@rollup/plugin-alias": "^3.1.9",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-image": "^2.0.5",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "@rollup/plugin-url": "^7.0.0",
+    "cross-env": "^7.0.2",
+    "install": "^0.13.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.79.1",
+    "rollup-plugin-copy": "^3.4.0",
+    "typescript": "^5.1.6",
+    "unbuild": "^1.2.1",
+    "vite": "^4.0.0",
+    "koa": "^2.13.4"
+  }
+}
