@@ -67,7 +67,7 @@ function getDevRemoteFileUrl(options: federationOptions | { remotes: any }, remo
 
   if (devUrl) return `${devUrl}/@id/__remoteEntryHelper__`
 
-  if (url.startWith('http')) return url + `/${filename || 'remoteEntrys.js'}?version=v${Date.now()}`
+  if (url.startsWith('http')) return url + `/${filename || 'remoteEntrys.js'}?version=v${Date.now()}`
 
   return `${host}/${base}/@id/__remoteEntryHelper__`
 }

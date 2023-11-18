@@ -8,12 +8,12 @@ interface RemoteEntry {
   unMount: Function
 }
 
-export function getComp(name: string, base: string, mountFunc: Function, unMountFunc: Function, config: ImportCompConfig) {
+export function getComp(name: string, mountFunc: Function, unMountFunc: Function, config: ImportCompConfig) {
   return defineComponent({
     async mounted() {
       let shadow = config.shadow ? createShadow(name, config) : null
 
-      await (mountFunc && mountFunc(shadow || `#${name}`, base, `#${name}`))
+      await (mountFunc && mountFunc(shadow || `#${name}`, config.base, `#${name}`))
       return config.mounted && config.mounted()
     },
     async beforeDestroy() {
@@ -31,9 +31,13 @@ export function getComp(name: string, base: string, mountFunc: Function, unMount
   })
 }
 
-export async function entryImportVue(name: string, config: ImportCompConfig) {
+export async function entryImportVue(name: string, config?: ImportCompConfig) {
   const [remoteName, remoteScript] = splitName(name)
+
+  if (!config) config = {}
+  config.remoteScriptName = remoteScript
+
   const remote: RemoteEntry = await remoteImport(name)
 
-  return getComp(remoteName, remoteScript, remote.mount, remote.unMount, config || {})
+  return getComp(remoteName, remote.mount, remote.unMount, config || {})
 }
