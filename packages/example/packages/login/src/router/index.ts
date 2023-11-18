@@ -5,8 +5,7 @@ import type { App } from 'vue'
 const createRouter = (base: string) =>
   VueRouter.createRouter({
     mode: 'history',
-    history: VueRouter.createWebHistory(),
-    base: base || '/login',
+    history: VueRouter.createWebHistory(base || 'login'),
     routes: loginRoute,
   })
 

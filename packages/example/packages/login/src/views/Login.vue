@@ -1,10 +1,7 @@
 <template>
-  <div>this is login.vue</div>
+  <div>this is pwd</div>
 </template>
 
-<script setup>
-</script>
+<script setup></script>
 
-<style>
-
-</style>
+<style></style>

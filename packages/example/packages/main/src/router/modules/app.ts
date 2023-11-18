@@ -10,11 +10,11 @@ const mainRoute = [
     component: () => import('../../views/Home.vue'),
   },
   {
-    path: '/login',
+    path: '/login/:chapters*',
     component: () => entryImportVue('loginRemote/entry'),
   },
   {
-    path: '/user',
+    path: '/user/:chapters*',
     component: () => entryImportVue('userRemote/entry'),
   },
   {
