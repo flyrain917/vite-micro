@@ -1,5 +1,4 @@
 import type { ImportCompConfig } from '../../types/client'
-import { registerShadowProxy } from './proxy'
 
 export function createShadow(appname: string, config: ImportCompConfig) {
   const appWrapper = document.getElementById(appname)

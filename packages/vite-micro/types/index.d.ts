@@ -30,6 +30,11 @@ export declare interface federationOptions {
    *  应用透出接口的配置
    */
   exposes?: ExposesOption
+
+  /**
+   * 需要转译的文件类型
+   */
+  transformFileTypes?: string[]
 }
 
 /**

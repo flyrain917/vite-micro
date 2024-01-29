@@ -131,8 +131,6 @@ export async function createMicroServer() {
       return mainConnect(ctx, next)
     }
 
-    console.log('=====ctx.originalUrl====', ctx.originalUrl)
-
     if (isRootIndexHtml(ctx.originalUrl)) return next()
 
     return mainConnect(ctx, next)

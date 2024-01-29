@@ -23,7 +23,10 @@ export function createNodeConfig(config) {
 
     plugins: [
       nodeResolve({ preferBuiltins: true }),
-      typescript(),
+      typescript({
+        outDir: 'dist/node', // 确保outDir在dir之内
+        tsconfig: './tsconfig.json', // 你的tsconfig.json文件的路径
+      }),
       commonjs(),
       config.isCli &&
         copy({

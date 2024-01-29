@@ -8,7 +8,6 @@
     "packages/user"
   ],
   "scripts": {
-    "serve": "node --loader ts-node/esm ./node_modules/vite-micro/src/bin/micro.js",
     "start": "micro serve",
     "build": "pnpm --parallel --filter='./packages/*' build"
   },
@@ -20,7 +19,6 @@
     "vue-router": "^4.0.16"
   },
   "devDependencies": {
-    "vite-micro": "workspace:*",
     "@babel/core": "^7.19.6",
     "@babel/node": "^7.19.1",
     "@babel/preset-env": "^7.19.4",
@@ -29,6 +27,8 @@
     "@vitejs/plugin-vue-jsx": "^3.0.1",
     "cross-env": "^7.0.3",
     "fast-glob": "^3.2.12",
+    "koa": "^2.13.4",
+    "koa-static": "^5.0.0",
     "prettier": "^2.8.0",
     "rimraf": "^3.0.2",
     "source-map": "^0.7.4",
@@ -36,8 +36,10 @@
     "tslib": "^2.6.1",
     "typescript": "^4.7.4",
     "vite": "^4.0.0",
+    "vite-micro": "workspace:*",
     "vite-plugin-babel-import": "^2.0.5",
     "vite-plugin-compression": "^0.4.0",
+    "vite-plugin-externals": "^0.6.2",
     "vite-plugin-html": "3.2.0",
     "vite-plugin-importer": "^0.2.5",
     "vite-plugin-require-transform": "^1.0.9",

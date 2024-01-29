@@ -6,6 +6,10 @@ const mainRoute = [
     redirect: '/home',
   },
   {
+    path: '/test',
+    component: () => import('../../views/test'),
+  },
+  {
     path: '/home',
     component: () => import('../../views/Home.vue'),
   },

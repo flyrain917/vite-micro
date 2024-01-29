@@ -22,21 +22,21 @@ interface GlobalCLIOptions {
 /**
  * removing global flags before passing as command specific sub-configs
  */
-function cleanOptions<Options extends GlobalCLIOptions>(options: Options): Omit<Options, keyof GlobalCLIOptions> {
-  const ret = { ...options }
-  delete ret['--']
-  delete ret.c
-  delete ret.config
-  delete ret.base
-  delete ret.clearScreen
-  delete ret.d
-  delete ret.debug
-  delete ret.f
-  delete ret.filter
-  delete ret.m
-  delete ret.mode
-  return ret
-}
+// function cleanOptions<Options extends GlobalCLIOptions>(options: Options): Omit<Options, keyof GlobalCLIOptions> {
+//   const ret = { ...options }
+//   delete ret['--']
+//   delete ret.c
+//   delete ret.config
+//   delete ret.base
+//   delete ret.clearScreen
+//   delete ret.d
+//   delete ret.debug
+//   delete ret.f
+//   delete ret.filter
+//   delete ret.m
+//   delete ret.mode
+//   return ret
+// }
 console.log('====11=')
 // dev
 cli

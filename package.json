@@ -1,6 +1,6 @@
 {
   "name": "@flyrain/vite-micro",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "private": true,
   "description": "基于vite 微前端框架",
   "workspaces": [
@@ -36,6 +36,6 @@
     "unbuild": "^1.2.1"
   },
   "dependencies": {
-    "vite-micro": "workspace:^"
+    "vite-plugin-externals": "^0.6.2"
   }
 }

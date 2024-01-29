@@ -3,17 +3,13 @@
     <h2>this is Home.vue</h2>
     <RemoteButton />
   </div>
-  
 </template>
 
 <script setup>
-import {remoteImport} from 'vite-micro/client'
-import { defineAsyncComponent } from "vue"
+import { remoteImport } from 'vite-micro/client'
+import { defineAsyncComponent } from 'vue'
 
-const RemoteButton = defineAsyncComponent(() => remoteImport("loginRemote/Button"));
-
+const RemoteButton = defineAsyncComponent(() => remoteImport('loginRemote/Button'))
 </script>
 
-<style>
-
-</style>
+<style></style>

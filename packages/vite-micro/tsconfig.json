@@ -1,5 +1,11 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
+    "noImplicitOverride": true,
+    "noUnusedLocals": false, // error:  is declared but its value is never read.
+    "noImplicitAny": false,
+    
+
     "target": "esnext",
     "module": "esnext",
     "strict": true,

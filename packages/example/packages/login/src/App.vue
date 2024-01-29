@@ -1,13 +1,10 @@
 <template>
   <div>
     <h2>this is login module</h2>
-    <router-view />
+    <RouterView />
   </div>
 </template>
 
-<script setup>
-</script>
+<script setup></script>
 
-<style>
-
-</style>
+<style></style>

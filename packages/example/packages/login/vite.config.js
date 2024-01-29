@@ -2,10 +2,27 @@ import { ConfigEnv, loadEnv, UserConfig, defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import viteCompression from 'vite-plugin-compression'
+import { viteExternalsPlugin } from 'vite-plugin-externals'
 
 import path from 'path'
 import packageJson from './package.json'
 import { federation } from 'vite-micro/node'
+
+let exampleOnLoadPlugin = {
+  name: 'example',
+  setup(build) {
+    // Load ".txt" files and return an array of words
+    build.onLoad({ filter: /.*/ }, async (args) => {
+      console.log('========text', text)
+      let text = await fs.promises.readFile(args.path, 'utf8')
+      debugger
+      return {
+        contents: text,
+        loader: 'js',
+      }
+    })
+  },
+}
 
 const HOST = '0.0.0.0'
 
@@ -30,12 +47,18 @@ export default ({ mode }) => {
           minifyInternalExports: false,
           plugins: [],
         },
+        external: ['vue'],
       },
+      external: ['vue'],
     },
-    optimizedeps: {
+    optimizeDeps: {
+      exclude: ['vue'],
       esbuildoptions: {
         target: 'esnext',
+        // external: ['vue'],
+        // plugins: [exampleOnLoadPlugin],
       },
+      force: true,
     },
     server: {
       host: HOST,
@@ -44,6 +67,7 @@ export default ({ mode }) => {
         strict: false,
         allow: ['../packages'],
       },
+      force: true,
     },
     css: {
       devSourcemap: true, // 不启用这个，vite对带css的vue文件不支持sourcemap
@@ -68,6 +92,10 @@ export default ({ mode }) => {
       }),
 
       vueJsx(),
+
+      // viteExternalsPlugin({
+      //   vue: 'Vue',
+      // }),
 
       federation({
         mode,

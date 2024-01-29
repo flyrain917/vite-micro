@@ -29,6 +29,7 @@ export default ({ mode, root, base }) => {
         // input: {
         //   // main: `${path.resolve(__dirname, './src/main.ts')}`,
         // },
+        external: ['vue'],
       },
     },
     optimizedeps: {
@@ -69,7 +70,6 @@ export default ({ mode, root, base }) => {
       vueJsx(),
 
       federation({
-        mode,
         remotes: {
           loginRemote: {
             url: `/assets/login`,

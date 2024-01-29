@@ -47,13 +47,14 @@
   "author": "flyrain",
   "license": "MIT",
   "peerDependencies": {
-    "vite": "^3.0.9",
-    "koa": "^2.13.4"
+    "koa": "^2.13.4",
+    "vite": "^3.0.9"
   },
   "dependencies": {
     "@originjs/vite-plugin-federation": "^1.1.9",
-    "estree-walker": "^3.0.3",
+    "@rollup/plugin-virtual": "^3.0.2",
     "cac": "^6.7.14",
+    "estree-walker": "^3.0.3",
     "fs-extra": "latest",
     "koa-connect": "^2.1.0",
     "koa-mount": "^4.0.0",
@@ -78,12 +79,12 @@
     "@rollup/plugin-url": "^7.0.0",
     "cross-env": "^7.0.2",
     "install": "^0.13.0",
+    "koa": "^2.13.4",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.1",
     "rollup-plugin-copy": "^3.4.0",
     "typescript": "^5.1.6",
     "unbuild": "^1.2.1",
-    "vite": "^4.0.0",
-    "koa": "^2.13.4"
+    "vite": "^4.0.0"
   }
 }

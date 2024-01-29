@@ -12,7 +12,7 @@ export async function importSharedMicro(name: string, moduleMap: moduleMapType, 
 }
 
 async function getSharedFromRuntime(name: string, moduleMap: moduleMapType, shareScope = 'default'): Promise<any> {
-  let module = null
+  let module: any = null
   window.__federation_shared__ = window.__federation_shared__ || { [shareScope]: {} }
   if (window?.__federation_shared__?.[shareScope]?.[name]) {
     const sharedModule = window.__federation_shared__[shareScope][name]
