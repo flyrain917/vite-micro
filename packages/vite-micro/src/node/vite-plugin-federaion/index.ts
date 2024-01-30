@@ -41,7 +41,7 @@ export default function federation(options: federationOptions): Plugin {
   function registerPlugins(mode: 'development' | 'production') {
     options.mode = mode
     parseRemotes(options)
-    parseExposes(options)
+    // parseExposes(options)
 
     if (mode === 'development') {
       pluginList = [devSharedPlugin(options), devExposePlugin(options), devRemotePlugin(options)]

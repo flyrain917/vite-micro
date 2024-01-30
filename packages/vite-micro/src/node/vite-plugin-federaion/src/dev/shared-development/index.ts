@@ -51,12 +51,9 @@ export function devSharedPlugin(options: federationOptions): PluginHooks {
     },
     config(config: any) {
       viteConfig = config
-
-      // newAlias.push({ find: new RegExp(`^vue$`), replacement: resolveShareImportModuleId })
-
-      // await handleConfigAlias(config, parsedOptions.devShared)
-
-      // return config
+      config.optimizeDeps = config.optimizeDeps || {}
+      config.optimizeDeps.exclude = config.optimizeDeps.exclude || []
+      config.optimizeDeps.exclude = [...config.optimizeDeps.exclude, ...shareName2Prop]
     },
     async resolveId(...args) {
       if (args[0] === shareVirsualModuleId) {

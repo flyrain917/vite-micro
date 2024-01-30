@@ -13,7 +13,7 @@
 // SPDX-License-Identifier: MulanPSL-2.0
 // *****************************************************************************
 
-import type { ConfigTypeSet } from './types'
+import type { ConfigTypeSet } from 'types/federation'
 // for generateBundle Hook replace
 export const EXPOSES_MAP = new Map()
 export const EXPOSES_KEY_MAP = new Map()

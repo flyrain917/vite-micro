@@ -12,5 +12,5 @@ export function splitName(name: string) {
 export const remoteImport: Function = async (name: string) => {
   const [remoteName, remoteScript] = splitName(name)
   // 加载脚步
-  return __federation_method_getRemote(remoteName, './' + remoteScript)
+  return __federation_method_getRemote(remoteName, remoteScript)
 }
