@@ -52,7 +52,6 @@ export default ({ mode }) => {
       external: ['vue'],
     },
     optimizeDeps: {
-      exclude: ['vue'],
       esbuildoptions: {
         target: 'esnext',
         // external: ['vue'],
