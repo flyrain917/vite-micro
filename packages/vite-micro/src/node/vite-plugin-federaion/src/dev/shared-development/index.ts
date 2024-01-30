@@ -13,26 +13,21 @@
 // SPDX-License-Identifier: MulanPSL-2.0
 // *****************************************************************************
 
-import type { PluginHooks } from '../../../types/pluginHooks'
+import type { PluginHooks } from 'types/pluginHooks'
 import { parseSharedOptions } from './parseShared'
 import { parsedOptions } from '../../../public'
-import type { VitePluginFederationOptions } from '../../../types'
-import type { federationOptions, RemotesOption } from '../../../../../../types'
-import { transformImportForRemote as shareModuleTransform, parseSharedToShareMap } from '../remote-development/tansformImportForRemote'
+import type { VitePluginFederationOptions } from 'types/federation'
+import type { federationOptions, RemotesOption } from 'types'
+import { transformImportForSahre, parseSharedToShareMap } from './handleShare'
 import { federationFnImportFunc } from '../../../../template/__federation_fn_import'
 import type { AcornNode, TransformPluginContext } from 'rollup'
 import { devSharedScopeCode } from './handleShare'
-import type { ViteDevServer } from '../../../types/viteDevServer'
+import type { ViteDevServer } from 'types/viteDevServer'
 import { NAME_CHAR_REG, removeNonRegLetter, isObject } from '../../../utils'
 import type { Alias, Plugin } from 'vite'
-import getShareTemplate from '../../../../template/__shareImport__'
-import { handleConfigAlias } from './share/index'
 
 const shareVirsualModuleId = 'virtual:__federation_fn_import'
 const resolveShareVirsualModuleId = '\0' + shareVirsualModuleId
-
-const shareImportModuleId = 'virtual:__shareImport__'
-const resolveShareImportModuleId = '\0' + shareImportModuleId
 
 export function devSharedPlugin(options: federationOptions): PluginHooks {
   parsedOptions.devShared = parseSharedOptions(options as VitePluginFederationOptions)
@@ -44,8 +39,6 @@ export function devSharedPlugin(options: federationOptions): PluginHooks {
 
   const sharedMap = parseSharedToShareMap(options.shared || [])
   const federationFnImport = federationFnImportFunc(sharedMap)
-
-  const aliasShareImport = getShareTemplate('vue')
 
   return {
     name: 'originjs:shared-development',
@@ -69,10 +62,6 @@ export function devSharedPlugin(options: federationOptions): PluginHooks {
       if (args[0] === shareVirsualModuleId) {
         return resolveShareVirsualModuleId
       }
-
-      if (args[0] === shareImportModuleId) {
-        return resolveShareImportModuleId
-      }
     },
     configureServer(server: ViteDevServer) {
       // get moduleGraph for dev mode dynamic reference
@@ -80,7 +69,6 @@ export function devSharedPlugin(options: federationOptions): PluginHooks {
     },
     load(id: string) {
       if (id === resolveShareVirsualModuleId) return federationFnImport
-      if (id === resolveShareImportModuleId) return aliasShareImport
     },
     // @ts-ignore
     async transform(this: TransformPluginContext, code: string, id: string) {
@@ -89,7 +77,7 @@ export function devSharedPlugin(options: federationOptions): PluginHooks {
         return code.replace('__shareScope__', scopeCode.join(','))
       }
 
-      const result = shareModuleTransform.call(this, code, [], parsedOptions.devShared)
+      const result = transformImportForSahre.call(this, code, parsedOptions.devShared)
 
       return result
     },

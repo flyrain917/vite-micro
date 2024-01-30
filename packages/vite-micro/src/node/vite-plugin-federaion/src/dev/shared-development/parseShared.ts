@@ -1,7 +1,7 @@
-import type { federationOptions, RemotesOption } from '../../../../../../types'
+import type { federationOptions, RemotesOption } from 'types'
 import host from '../../../../hostAddress'
 import { parseOptions } from '../../../utils'
-import type { ConfigTypeSet, Exposes, Remotes, RemotesConfig, Shared, VitePluginFederationOptions } from '../../../types'
+import type { ConfigTypeSet, Exposes, Remotes, RemotesConfig, Shared, VitePluginFederationOptions } from 'types/federation'
 
 export function parseSharedOptions(options: VitePluginFederationOptions): [string, string | ConfigTypeSet][] {
   const shared = parseOptions(

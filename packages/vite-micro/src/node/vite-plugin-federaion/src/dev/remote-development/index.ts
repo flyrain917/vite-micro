@@ -14,13 +14,13 @@
 // *****************************************************************************
 
 import type { UserConfig } from 'vite'
-import type { ConfigTypeSet, RemotesConfig, VitePluginFederationOptions } from '../../../types'
-import type { federationOptions, RemotesOption } from '../../../../../../types'
+import type { ConfigTypeSet, RemotesConfig, VitePluginFederationOptions } from 'types/federation'
+import type { federationOptions, RemotesOption } from 'types'
 import type { AcornNode, TransformPluginContext, TransformResult as TransformResult_2 } from 'rollup'
-import type { ViteDevServer } from '../../../types/viteDevServer'
+import type { ViteDevServer } from 'types/viteDevServer'
 import { getFileExtname, getModuleMarker, normalizePath, REMOTE_FROM_PARAMETER } from '../../../utils'
 import { builderInfoFactory, parsedOptions } from '../../../public'
-import type { PluginHooks } from '../../../types/pluginHooks'
+import type { PluginHooks } from 'types/pluginHooks'
 import { parseRemoteOptions, createRemotesMap, Remote } from './parseRemotes'
 import { parseSharedOptions } from '../shared-development/parseShared'
 import remoteFederationTemplate from '../../../../template/__federation__'
@@ -89,7 +89,7 @@ export function devRemotePlugin(options: federationOptions): PluginHooks {
         return
       }
 
-      const result = transformImportForRemote.call(this, code, remotes as Remote[], parsedOptions.devShared)
+      const result = transformImportForRemote.call(this, code, remotes as Remote[])
 
       return result
     },

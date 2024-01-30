@@ -13,12 +13,14 @@
 // SPDX-License-Identifier: MulanPSL-2.0
 // *****************************************************************************
 
-import type { ConfigTypeSet, Exposes, Remotes, RemotesConfig, Shared, VitePluginFederationOptions } from '../types'
+import type { ConfigTypeSet, Exposes, Remotes, RemotesConfig, Shared, VitePluginFederationOptions } from 'types/federation'
 import { readFileSync } from 'fs'
 import { createHash } from 'crypto'
 import path, { parse, posix } from 'path'
 import type { AcornNode, TransformPluginContext, PluginContext, TransformResult as TransformResult_2 } from 'rollup'
-import type { PluginHooks } from '../types/pluginHooks'
+import type { PluginHooks } from 'types/pluginHooks'
+import { federationOptions } from 'types'
+import host from '../../hostAddress'
 
 export function findDependencies(
   this: PluginContext,
@@ -215,4 +217,45 @@ export const NAME_CHAR_REG = new RegExp('[0-9a-zA-Z@_-]+')
 
 export function isObject(o: unknown): boolean {
   return Object.prototype.toString.call(o) === '[object Object]'
+}
+
+export function getDevRemoteFileUrl(options: federationOptions | { remotes: any }, remoteName: string, base: string) {
+  // 这里外部其他项目组件引入配置devUrl
+  const { devUrl, url, filename } = options.remotes[remoteName]
+
+  if (devUrl) return `${devUrl}/@id/__remoteEntryHelper__`
+
+  if (url.startsWith('http')) return url + `/${filename || 'remoteEntrys.js'}?version=v${Date.now()}`
+
+  return `${host}/${base}/@id/__remoteEntryHelper__`
+}
+
+export function parseRemotes(options: federationOptions) {
+  const remotes = options.remotes || {}
+  Object.keys(remotes).forEach((remoteName) => {
+    let base = remoteName.split('Remote')[0]
+
+    if (options.mode === 'development') {
+      remotes[remoteName].external = getDevRemoteFileUrl(options, remoteName, base)
+    } else {
+      remotes[remoteName].url = remotes[remoteName].url || `/assets/${base}`
+      remotes[remoteName].external =
+        remotes[remoteName].external ||
+        remotes[remoteName].url + `/${remotes[remoteName].filename || 'remoteEntrys.js'}?version=v${Date.now()}`
+    }
+    remotes[remoteName].from = 'vite'
+    remotes[remoteName].format = 'esm'
+  })
+
+  return remotes
+}
+
+export function parseExposes(options: federationOptions) {
+  options.exposes = options.exposes || {}
+  let exposes = {}
+  Object.keys(options.exposes).forEach((exposesName) => {
+    //@ts-ignore
+    exposes['./' + exposesName] = options.exposes[exposesName]
+  })
+  return exposes
 }

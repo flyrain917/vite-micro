@@ -19,7 +19,7 @@ export declare interface federationOptions {
   /**
    * 开发模式或生产模式 的微应用加载方式有区别
    */
-  mode: 'development' | 'production'
+  mode?: 'development' | 'production'
 
   /**
    *  注册远程模块的相关配置

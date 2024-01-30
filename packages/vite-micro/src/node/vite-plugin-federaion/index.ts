@@ -16,9 +16,9 @@
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer, ResolvedConfig } from 'vite'
 import virtual from '@rollup/plugin-virtual'
 import { dirname } from 'path'
-import type { VitePluginFederationOptions } from './types'
+import type { VitePluginFederationOptions } from 'types/federation'
 import { builderInfoFactory, DEFAULT_ENTRY_FILENAME, parsedOptions } from './public'
-import type { PluginHooks } from './types/pluginHooks'
+import type { PluginHooks } from 'types/pluginHooks'
 import type { ModuleInfo } from 'rollup'
 import { devSharedPlugin } from './src/dev/shared-development'
 import { devRemotePlugin } from './src/dev/remote-development'
@@ -26,7 +26,7 @@ import { devExposePlugin } from './src/dev/expose-development'
 import type { federationOptions, RemotesOption } from 'types'
 import type { AcornNode, TransformPluginContext, TransformResult as TransformResult_2 } from 'rollup'
 import prodFederation from '@originjs/vite-plugin-federation'
-import { pluginsTransformCall } from './utils'
+import { pluginsTransformCall, parseRemotes, parseExposes } from './utils'
 // @ts-ignore
 import federation_satisfy from '@originjs/vite-plugin-federation/dist/satisfy.js?raw'
 
@@ -38,7 +38,11 @@ export default function federation(options: federationOptions): Plugin {
   let registerCount = 0
   const builderInfo = builderInfoFactory()
 
-  function registerPlugins(mode: string) {
+  function registerPlugins(mode: 'development' | 'production') {
+    options.mode = mode
+    parseRemotes(options)
+    parseExposes(options)
+
     if (mode === 'development') {
       pluginList = [devSharedPlugin(options), devExposePlugin(options), devRemotePlugin(options)]
     } else {

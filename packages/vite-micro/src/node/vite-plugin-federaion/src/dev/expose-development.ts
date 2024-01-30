@@ -15,10 +15,10 @@
 
 import { parseExposeOptions } from '../../utils'
 import { parsedOptions } from '../../public'
-import type { VitePluginFederationOptions } from '../../types'
-import type { PluginHooks } from '../../types/pluginHooks'
+import type { VitePluginFederationOptions } from 'types/federation'
+import type { PluginHooks } from 'types/pluginHooks'
 import { getRemoteEntryFile } from '../../../template/__remoteEntryHelper__'
-import type { federationOptions, RemotesOption } from '../../../../../types'
+import type { federationOptions, RemotesOption } from 'types'
 
 const virtualModuleId = '__remoteEntryHelper__'
 const resolvedVirtualModuleId = '\0' + virtualModuleId
