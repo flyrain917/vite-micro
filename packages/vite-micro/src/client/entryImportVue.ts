@@ -4,20 +4,35 @@ import { createShadow, deleteShadow } from './shadow'
 import type { ImportCompConfig } from '../../types/client'
 
 interface RemoteEntry {
-  mount: Function
-  unMount: Function
+  mount?: Function
+  unMount?: Function
 }
 
-export function getComp(name: string, mountFunc: Function, unMountFunc: Function, config: ImportCompConfig) {
+/**
+ *
+ * @param name : '{remoteName}/{remoteScript}'
+ * @param config
+ * @returns
+ */
+export function getComp(name: string, config: ImportCompConfig) {
+  const [remoteName, remoteScript] = splitName(name)
+
+  if (!config) config = {}
+  config.remoteScriptName = remoteScript
+
+  let remote: RemoteEntry = {}
+
   return defineComponent({
     async mounted() {
-      let shadow = config.shadow ? createShadow(name, config) : null
+      let shadow = config.shadow ? createShadow(remoteName, config) : null
 
-      await (mountFunc && mountFunc(shadow || `#${name}`, config.base, `#${name}`))
+      remote = await remoteImport(name)
+
+      await (remote.mount && remote.mount(shadow || `#${remoteName}`, config.base, `#${remoteName}`))
       return config.mounted && config.mounted()
     },
     async beforeDestroy() {
-      await (unMountFunc && unMountFunc())
+      await (remote.unMount && remote.unMount())
       const res = await (config.unMounted && config.unMounted())
       config.shadow && deleteShadow(name, config)
       return res
@@ -26,18 +41,11 @@ export function getComp(name: string, mountFunc: Function, unMountFunc: Function
       return config.destroyed && config.destroyed()
     },
     render() {
-      return h('div', { style: 'height: 100%' }, [h('div', { id: name })])
+      return h('div', { style: 'height: 100%' }, [h('div', { id: remoteName })])
     },
   })
 }
 
 export async function entryImportVue(name: string, config?: ImportCompConfig) {
-  const [remoteName, remoteScript] = splitName(name)
-
-  if (!config) config = {}
-  config.remoteScriptName = remoteScript
-
-  const remote: RemoteEntry = await remoteImport(name)
-
-  return getComp(remoteName, remote.mount, remote.unMount, config || {})
+  return getComp(name, config || {})
 }

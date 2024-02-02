@@ -1,4 +1,20 @@
 import type { ImportCompConfig } from '../../types/client'
+import { registerShadowProxy, unRegisterShadowProxy } from './proxy'
+
+/**
+ * https://cloud.tencent.com/developer/article/1761306
+ * webcomponent & css shadow
+ * 
+ * 
+
+1.  shadow dom 里面的样式不会影响到外面
+2.  外面的样式会影响到shadow dom里面的
+3. 下面如何防止外面的样式影响里面的
+:host {
+  all: initial !important;
+} 
+
+ */
 
 export function createShadow(appname: string, config: ImportCompConfig) {
   const appWrapper = document.getElementById(appname)
@@ -11,7 +27,7 @@ export function createShadow(appname: string, config: ImportCompConfig) {
     shadow?.appendChild(style)
   }
 
-  // if (config.shadow) registerShadowProxy(remoteUrl, shadow)
+  registerShadowProxy(remoteUrl, shadow)
 
   return shadow
 }
@@ -27,6 +43,8 @@ export function deleteShadow(appname: string, config: ImportCompConfig) {
     parentDom?.removeChild(appWrapper)
 
     parentDom?.appendChild(cloneDom)
+
+    unRegisterShadowProxy()
   } catch (e) {
     console.error(e)
   }

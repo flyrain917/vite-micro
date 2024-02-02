@@ -1,45 +1,52 @@
-/**
- * https://cloud.tencent.com/developer/article/1761306
- * webcomponent & css shadow
- * 
- * 
-
-1.  shadow dom 里面的样式不会影响到外面
-2.  外面的样式会影响到shadow dom里面的
-3. 下面如何防止外面的样式影响里面的
-:host {
-  all: initial !important;
-} 
-
- */
-
 const document: any = window.document
 
 const shadowMaps: any = {}
 
 export function registerShadowProxy(remote: string, shadow: ShadowRoot | undefined) {
   shadowMaps[remote] = shadow
-  if (!!document.isProxyed) {
-    proxyDocument()
+  if (!document.isProxyed) {
+    proxyDocumentGetElementById()
+    proxyHeadAppendChild()
   }
+}
+
+export function unRegisterShadowProxy(remote: string, shadow: ShadowRoot | undefined) {
+  shadowMaps[remote] = null
 }
 
 /**
  * 在shadow里面 使用document.getElementById，使用shadow的父dom代替
  */
-export function proxyDocument() {
-  const originGetElementById = document.getElementById
+export function proxyDocumentGetElementById() {
+  document.originGetElementById = document.originGetElementById || document.getElementById
   document.getElementById = function (selector: string) {
     const currentScriptUrl = getCurrentFileUrl()
-    if (!currentScriptUrl) return originGetElementById(selector)
+    if (!currentScriptUrl) return document.originGetElementById(selector)
 
     const currentRemote: string | undefined = Object.keys(shadowMaps).find((remote) => currentScriptUrl.startsWith(remote))
-    if (!currentRemote) return originGetElementById(selector)
+    if (!currentRemote) return document.originGetElementById(selector)
 
     const currentShadow = shadowMaps[currentRemote]
     return currentShadow.getElementById(selector)
   }
-  document.originGetElementById = originGetElementById
+  document.isProxyed = true
+}
+
+/**
+ * 在shadow里面 document.head.appendChild(style) 需要替换为shadow.appendChild(style)
+ */
+export function proxyHeadAppendChild() {
+  document.head.originAppendChild = document.head.originAppendChild || document.head.appendChild
+  document.head.appendChild = function (style: HTMLElement) {
+    const currentScriptUrl = getCurrentFileUrl()
+    if (!currentScriptUrl) return document.head.originAppendChild(style)
+
+    const currentRemote: string | undefined = Object.keys(shadowMaps).find((remote) => currentScriptUrl.startsWith(remote))
+    if (!currentRemote) return document.head.originAppendChild(style)
+
+    const currentShadow = shadowMaps[currentRemote]
+    return currentShadow.appendChild(style)
+  }
   document.isProxyed = true
 }
 
@@ -53,11 +60,13 @@ export function getCurrentFileUrl() {
 
   console.log('getCurrentFileUrl====', url)
 
-  try {
-    throw new Error()
-  } catch (e: Error | any) {
-    url = e?.sourceURL
-    console.log('e.sourceURL====', e?.sourceURL)
+  if (!url) {
+    try {
+      throw new Error()
+    } catch (e: Error | any) {
+      url = e?.sourceURL
+      console.log('e.sourceURL====', e?.sourceURL)
+    }
   }
 
   return url

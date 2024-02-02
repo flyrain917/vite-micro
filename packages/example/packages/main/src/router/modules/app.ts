@@ -18,8 +18,14 @@ const mainRoute = [
     component: () => entryImportVue('loginRemote/entry'),
   },
   {
-    path: '/user/:chapters*',
-    component: () => entryImportVue('userRemote/entry'),
+    path: '/user',
+    component: () => import('../../views/User.vue'),
+    children: [
+      {
+        path: '/user/:chapters*',
+        component: () => entryImportVue('userRemote/entry', { shadow: true }),
+      },
+    ],
   },
   {
     path: '/button',
