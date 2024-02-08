@@ -15,7 +15,8 @@
 
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer, ResolvedConfig } from 'vite'
 import virtual from '@rollup/plugin-virtual'
-import { dirname } from 'path'
+import path, { dirname } from 'path'
+import fs from 'fs-extra'
 import type { VitePluginFederationOptions } from 'types/federation'
 import { builderInfoFactory, DEFAULT_ENTRY_FILENAME, parsedOptions } from './public'
 import type { PluginHooks } from 'types/pluginHooks'
@@ -29,6 +30,7 @@ import prodFederation from '@originjs/vite-plugin-federation'
 import { pluginsTransformCall, parseRemotes, parseExposes } from './utils'
 // @ts-ignore
 import federation_satisfy from '@originjs/vite-plugin-federation/dist/satisfy.js?raw'
+import { generateCommonRemoteEntryFile } from '../template/createRemoteEntrys'
 
 export default function federation(options: federationOptions): Plugin {
   options.filename = options.filename ? options.filename : DEFAULT_ENTRY_FILENAME
@@ -37,6 +39,7 @@ export default function federation(options: federationOptions): Plugin {
   let virtualMod: any
   let registerCount = 0
   const builderInfo = builderInfoFactory()
+  let viteConfig: any = {}
 
   function registerPlugins(mode: 'development' | 'production') {
     options.mode = mode
@@ -88,6 +91,7 @@ export default function federation(options: federationOptions): Plugin {
       return _options
     },
     config(config: UserConfig, env: ConfigEnv) {
+      viteConfig = config
       options.mode = options.mode ?? env.mode
       registerPlugins(options.mode)
       registerCount++
@@ -179,6 +183,17 @@ export default function federation(options: federationOptions): Plugin {
     generateBundle: function (_options, bundle, isWrite) {
       for (const pluginHook of pluginList) {
         ;(pluginHook.generateBundle as Function)?.call(this, _options, bundle, isWrite)
+      }
+    },
+
+    closeBundle() {
+      if (options.exposes) {
+        const dirArrs = viteConfig.build.assetsDir.split('/')
+        const version = dirArrs[dirArrs.length - 1]
+        const commonRemotePath = path.resolve(viteConfig.build.outDir + '/' + viteConfig.build.assetsDir, '../remoteEntrys.js')
+        fs.ensureDir(path.resolve(viteConfig.build.outDir + '/' + viteConfig.build.assetsDir), () => {
+          fs.writeFileSync(commonRemotePath, generateCommonRemoteEntryFile(version))
+        })
       }
     },
   }

@@ -21,6 +21,7 @@ export function getRemoteEntryFile(options: federationOptions, viteConfig: UserC
         const seen = {}
   
         export const get =(module) => {
+          console.log('===get=', module)
           return moduleMap[module]();
         };
         export const init =(shareScope) => {

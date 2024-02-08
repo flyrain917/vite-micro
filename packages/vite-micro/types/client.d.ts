@@ -10,3 +10,8 @@ export declare interface ImportCompConfig {
   base?: string // 组件的挂载，绑定远程应用路由的根路径，由父(host)应用传入
   remoteScriptName?: string // 父(host)应用 对远程组件的命名标识
 }
+
+export declare interface MicroShadowRoot extends ShadowRoot {
+  head?: Element
+  body?: Element
+}

@@ -29,6 +29,7 @@ export default function remoteFederationTemplate(remoteMap: string) {
     const initMap = Object.create(null);
     async function __federation_method_ensure(remoteId) {
       const remote = remotesMap[remoteId];
+      console.log('======remote', remoteId, remote)
       if (!remote.inited) {
         if ('var' === remote.format) {
           // loading js with script tag

@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "start": "micro serve",
+    "prod": "node ./server.mjs",
     "build": "pnpm --parallel --filter='./packages/*' build"
   },
   "dependencies": {
